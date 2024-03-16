@@ -1,4 +1,7 @@
 import pygame
+import pyscroll
+
+from pyscroll.orthographic import BufferedRenderer
 
 from animation import SpriteAnimé
 
@@ -30,7 +33,7 @@ class Entité(SpriteAnimé):
 
     def update(self):
         #on dit que la position du joueur correspond au coin en haut a gauche de son "rect" (qui comme dit avant correspond a l'image)
-        self.rect.topleft = self.position       
+        self.rect.center = self.position       
         self.feet.midbottom = self.rect.midbottom # On dit que les pieds correspondent au bas du rect
     
     def collision(self):
@@ -52,10 +55,9 @@ class Joueur(Entité):
 
     def attaque(self,screen):
         mouse = pygame.mouse.get_pos()
-        start = pygame.math.Vector2(self.position)
-        
+        start = pygame.math.Vector2(self.position[0]*3,self.position[1]*3)
         end = start + (mouse - start).normalize() * 50
-        print(f'pos = {self.position}')
+        print(f'Player Position = {self.position}, Mouse Position = {mouse}')
         pygame.draw.line(screen, (0,0,255), start, end)
         
         axe = pygame.image.load('graphiques/hache.png')

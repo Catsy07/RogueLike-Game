@@ -21,8 +21,10 @@ class Game:
 
     def souris(self):
         left, middle, right = pygame.mouse.get_pressed()
+        pos = pygame.mouse.get_pos()
         if left:
             self.joueur.attaque(self.screen)
+            print(f'translated player position {self.map_manager.map_layer().translate_point(self.joueur.position)}')
         """axe = pygame.transform.scale(axe, (24,46))
         if left:
             self.screen.blit(axe, pos)"""

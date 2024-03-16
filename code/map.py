@@ -9,13 +9,14 @@ class Portail:
 
 
 class Map:
-    def __init__(self, nom, murs, groupe, tmx_data, portails):
+    def __init__(self, nom, murs, groupe, tmx_data, portails, map_layer):
         # Class map qui a un nom, des collisions et un groupe de calques
         self.nom = nom
         self.murs = murs
         self.groupe = groupe
         self.tmx_data = tmx_data
         self.portails = portails
+        self.map_layer = map_layer
 
 class MapManager:
     def __init__(self, screen, joueur):
@@ -76,7 +77,7 @@ class MapManager:
         groupe = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4) 
         groupe.add(self.joueur)
 
-        map = Map(nom, walls, groupe, tmx_data, portails) # Finalement on crée la carte a partir des infos qu'on a pu récuperer
+        map = Map(nom, walls, groupe, tmx_data, portails, map_layer) # Finalement on crée la carte a partir des infos qu'on a pu récuperer
         self.maps[nom] = map # On range cette carte dans le dictionnaire
 
     def map_info(self):
@@ -86,6 +87,10 @@ class MapManager:
     def groupe(self):
         # A partir des infos on récupere le groupe de calques
         return self.map_info().groupe
+    
+    def map_layer(self):
+        # A partir des infos on récupere le groupe de calques
+        return self.map_info().map_layer
     
     def murs(self):
         # Et les murs
