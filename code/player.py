@@ -61,7 +61,7 @@ class Joueur(Entité):
         super().__init__("pumpkin_dude", 0, 0, 1)
 
     def attaque(self, pivot, name, surface):
-        pos = pivot + (40,0)
+        pos = pivot + (50,0)
         image_orig =  pygame.transform.scale(pygame.transform.rotate(pygame.image.load(f"graphiques/{name}.png"), -90), (46,24))
         image = image_orig
         rect = image.get_rect(center = pos)
