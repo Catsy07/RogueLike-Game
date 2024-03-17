@@ -1,9 +1,16 @@
 import pygame
 import pyscroll
-
+import math
 from pyscroll.orthographic import BufferedRenderer
 
 from animation import SpriteAnimé
+
+def rotate_pivot(image, angle, pivot, origine):
+    surf = pygame.transform.rotate(image, angle)
+
+    offset = pivot + (origine - pivot).rotate(-angle)
+    rect = surf.get_rect(center = offset)
+    return surf, rect
 
 class Entité(SpriteAnimé):
     def __init__(self, nom, x, y, vitesse):
@@ -39,7 +46,7 @@ class Entité(SpriteAnimé):
     def collision(self):
         # en cas de collision, on le faitrevenir a la position qu'on avait sauvergardée grace a "save_location"
         self.position = self.old_pos
-        self.rect.topleft = self.position
+        self.rect.center = self.position
         self.feet.midbottom = self.rect.midbottom
         
 
@@ -53,29 +60,23 @@ class Joueur(Entité):
     def __init__(self):
         super().__init__("pumpkin_dude", 0, 0, 1)
 
-    def attaque(self,screen):
-        mouse = pygame.mouse.get_pos()
-        start = pygame.math.Vector2(self.position[0]*3,self.position[1]*3)
-        end = start + (mouse - start).normalize() * 50
-        print(f'Player Position = {self.position}, Mouse Position = {mouse}')
-        pygame.draw.line(screen, (0,0,255), start, end)
-        
-        axe = pygame.image.load('graphiques/hache.png')
-        return axe, mouse
+    def attaque(self, pivot, name, surface):
+        pos = pivot + (40,0)
+        image_orig =  pygame.transform.scale(pygame.transform.rotate(pygame.image.load(f"graphiques/{name}.png"), -90), (46,24))
+        image = image_orig
+        rect = image.get_rect(center = pos)
+
+        mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
+        mouse_offset = mouse_pos - pivot
+
+        angle = -math.degrees(math.atan2(mouse_offset.y, mouse_offset.x))
+        print(pygame.mouse.get_pos())
+        image, rect = rotate_pivot(image_orig, angle, pivot, pos)
+        surface.blit(image, rect)
 
 
 class Monstre(Entité):
     def __init__(self):
         super().__init__("")
 
-'''class Attaque():
-    def __init__(self):
-        self.image = pygame.image.load('graphiques/hache.png')
-    
-    def render(self, screen):
-        left, siddle ,right = pygame.mouse.get_pressed()
-        if left:
-            print('hace')
-            pos = pygame.mouse.get_pos()
-            screen.blit(self.image,pos)
-'''
+

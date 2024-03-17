@@ -281,7 +281,7 @@
   <object id="7" type="Collisions" x="208" y="16.333" width="14.6667" height="239"/>
   <object id="8" type="Collisions" x="126.667" y="16" width="92" height="11.6667"/>
   <object id="9" name="sortie_spawn" x="97.667" y="31.333" width="29.3333" height="16.6667"/>
-  <object id="11" name="spawn_spawn" x="111.667" y="96">
+  <object id="11" name="spawn_spawn" x="111" y="96">
    <point/>
   </object>
  </objectgroup>

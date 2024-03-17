@@ -2,8 +2,9 @@ import pygame
 import pytmx
 import pyscroll
 from map import MapManager
+import math
 
-from player import Joueur
+from player import *
 
 class Game:
     def __init__(self):
@@ -17,17 +18,17 @@ class Game:
         # On crée un instance de la classe Joueur
         self.joueur = Joueur()
         self.map_manager = MapManager(self.screen, self.joueur)
+        self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
+        self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
+        self.vect_center = self.joueur_vect//2
         self.xbool = False
 
     def souris(self):
         left, middle, right = pygame.mouse.get_pressed()
-        pos = pygame.mouse.get_pos()
         if left:
-            self.joueur.attaque(self.screen)
-            print(f'translated player position {self.map_manager.map_layer().translate_point(self.joueur.position)}')
-        """axe = pygame.transform.scale(axe, (24,46))
-        if left:
-            self.screen.blit(axe, pos)"""
+            self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
+            self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
+            self.joueur.attaque(self.joueur_vect, 'hache', self.screen)
 
 
     def presse(self):
@@ -56,6 +57,7 @@ class Game:
     def update(self):
         #cette fonction vérifie les parametres du jeu pour gerer les collisions, les interactions, etc...
         self.map_manager.update()
+        
 
     def go(self):
 
