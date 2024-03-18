@@ -18,17 +18,12 @@ class Game:
         # On crée un instance de la classe Joueur
         self.joueur = Joueur()
         self.map_manager = MapManager(self.screen, self.joueur)
-        self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
-        self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
-        self.vect_center = self.joueur_vect//2
         self.xbool = False
 
     def souris(self):
-        left, middle, right = pygame.mouse.get_pressed()
-        if left:
-            self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
-            self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
-            self.joueur.attaque(self.joueur_vect, 'hache', self.screen)
+        self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
+        self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
+        self.joueur.attaque(self.joueur_vect, 'grande_epee', self.screen)
 
 
     def presse(self):

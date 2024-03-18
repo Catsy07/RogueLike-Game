@@ -8,8 +8,8 @@ class SpriteAnimé(pygame.sprite.Sprite):
         self.index = 0
         self.clock = 0
         self.images = {
-            'idle' : self.getimages(0,4,16,23,0),
-            'run' : self.getimages(4,5,16,23,0)
+            'idle' : self.getimages(0,4,16,self.sprite_sheet.get_height(),0),
+            'run' : self.getimages(4,5,16,self.sprite_sheet.get_height(),0)
             }
             
     def change_animation(self,name,xbool):

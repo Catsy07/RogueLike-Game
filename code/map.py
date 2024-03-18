@@ -61,7 +61,7 @@ class MapManager:
 
     def nouvelle_carte(self,nom, portails=[]):
         # Fonction qui permet de créer une carte et de la stocker dans le dictionnaire "maps"
-        tmx_data = pytmx.util_pygame.load_pygame(f"code/Maps/{nom}.tmx")
+        tmx_data = pytmx.util_pygame.load_pygame(f"code/Maps2/{nom}.tmx")
         map_data = pyscroll.data.TiledMapData(tmx_data) # on récupere les données de la carte
         map_layer = pyscroll.orthographic.BufferedRenderer(map_data, self.screen.get_size())
         map_layer.zoom = 3 # Zoom sur le joueur

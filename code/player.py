@@ -15,8 +15,7 @@ def rotate_pivot(image, angle, pivot, origine):
 class Entité(SpriteAnimé):
     def __init__(self, nom, x, y, vitesse):
         # On crée la classe "Joueur" qui hérite de la super-classe "Sprite" de Pygame.
-        super().__init__(nom)
-        self.sprite_sheet = pygame.image.load(f'graphiques/{nom}.png') #Image du sprite
+        super().__init__(nom)#Image du sprite
         self.image = self.get_image(0,0) # on injecte l'image
         self.image.set_colorkey([0,0,0])
         self.rect = self.image.get_rect() # On définit la "hitbox" du joueur en fonction de la taille de l'image
@@ -58,11 +57,18 @@ class Entité(SpriteAnimé):
     
 class Joueur(Entité):
     def __init__(self):
-        super().__init__("pumpkin_dude", 0, 0, 1)
-
+        super().__init__("Chevalier Rose", 0, 0, 1)
+        
     def attaque(self, pivot, name, surface):
-        pos = pivot + (40,0)
-        image_orig =  pygame.transform.scale(pygame.transform.rotate(pygame.image.load(f"graphiques/{name}.png"), -90), (46,24))
+        left, middle, right = pygame.mouse.get_pressed()
+        
+        if left:
+            plus = 60
+        else:
+            plus = 40
+        pos = pivot + (plus,0)
+        image_orig =  pygame.transform.rotate(pygame.image.load(f"graphiques/{name}.png"), -90)
+        image_orig =  pygame.transform.scale(image_orig,(image_orig.get_width()*2,image_orig.get_height()*2))
         image = image_orig
         rect = image.get_rect(center = pos)
 
@@ -70,7 +76,6 @@ class Joueur(Entité):
         mouse_offset = mouse_pos - pivot
 
         angle = -math.degrees(math.atan2(mouse_offset.y, mouse_offset.x))
-        print(pygame.mouse.get_pos())
         image, rect = rotate_pivot(image_orig, angle, pivot, pos)
         surface.blit(image, rect)
 
