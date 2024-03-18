@@ -54,14 +54,15 @@ class Entité(SpriteAnimé):
         image = pygame.Surface([16,32])
         image.blit(self.sprite_sheet,(0,0),(x,y,16,32))
         return image
-    
+plus = 40    
 class Joueur(Entité):
     def __init__(self):
         super().__init__("Chevalier Rose", 0, 0, 1)
         
+        
     def attaque(self, pivot, name, surface):
         left, middle, right = pygame.mouse.get_pressed()
-        
+        plus = 40
         if left:
             plus = 60
         else:
@@ -81,7 +82,9 @@ class Joueur(Entité):
 
 
 class Monstre(Entité):
-    def __init__(self):
-        super().__init__("")
+    def __init__(self, nom, x, y):
+        super().__init__(nom, x, y, 0.75)
+
+
 
 

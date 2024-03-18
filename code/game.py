@@ -20,6 +20,9 @@ class Game:
         self.map_manager = MapManager(self.screen, self.joueur)
         self.xbool = False
 
+        #liste des mobs
+        self.mobs = []
+
     def souris(self):
         self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
         self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
@@ -52,6 +55,7 @@ class Game:
     def update(self):
         #cette fonction vérifie les parametres du jeu pour gerer les collisions, les interactions, etc...
         self.map_manager.update()
+        
         
 
     def go(self):
