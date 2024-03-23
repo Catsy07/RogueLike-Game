@@ -23,10 +23,15 @@ class Game:
         #liste des mobs
         self.mobs = []
 
+    def animation_mob(self):
+        mobs = self.map_manager.mobs()
+        for i in mobs:
+            i.change_animation('idle', False)
+
     def souris(self):
         self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
         self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
-        self.joueur.attaque(self.joueur_vect, 'grande_epee', self.screen)
+        self.joueur.attaque(self.joueur_vect, 'grande_epee', self.screen, self.map_manager.groupe()._spritelist)
 
 
     def presse(self):
@@ -55,6 +60,7 @@ class Game:
     def update(self):
         #cette fonction vérifie les parametres du jeu pour gerer les collisions, les interactions, etc...
         self.map_manager.update()
+        self.animation_mob()
         
         
 

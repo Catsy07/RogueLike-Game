@@ -59,18 +59,20 @@ class Joueur(Entité):
     def __init__(self):
         super().__init__("Chevalier Rose", 0, 0, 1)
         
-        
-    def attaque(self, pivot, name, surface):
+    def attaque(self, pivot, name, surface, monstres):
         left, middle, right = pygame.mouse.get_pressed()
-        plus = 40
-        if left:
-            plus = 60
-        else:
-            plus = 40
-        pos = pivot + (plus,0)
         image_orig =  pygame.transform.rotate(pygame.image.load(f"graphiques/{name}.png"), -90)
         image_orig =  pygame.transform.scale(image_orig,(image_orig.get_width()*2,image_orig.get_height()*2))
         image = image_orig
+        plus = 40
+        if left:
+            plus = 60
+            for i in monstres:
+                if self.rect.colliderect(i.rect) and type(i) is Monstre:
+                    print("touché")
+        else:
+            plus = 40
+        pos = pivot + (plus,0)
         rect = image.get_rect(center = pos)
 
         mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
@@ -84,7 +86,3 @@ class Joueur(Entité):
 class Monstre(Entité):
     def __init__(self, nom, x, y):
         super().__init__(nom, x, y, 0.75)
-
-
-
-

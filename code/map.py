@@ -1,5 +1,6 @@
 import pygame, pytmx, pyscroll
 from player import *
+from time import sleep
 
 class Portail:
     def __init__(self, from_world, origin_point, target_world, teleport_point):
@@ -26,7 +27,7 @@ class MapManager:
         self.maps = dict() #On va stocker toutes les differentes cartes ici
         self.screen = screen
         self.joueur = joueur
-        self.current_map = 'Spawn' # Map actuelle 
+        self.current_map = 'Map 1' # Map actuelle 
         
         # On crée les cartes 
         self.nouvelle_carte("Spawn", portails=[
@@ -36,7 +37,7 @@ class MapManager:
             Portail('Map 1', "sortie_map1", 'Spawn', 'spawn_spawn')
         ])
 
-        self.teleport("spawn_spawn")
+        self.teleport("spawn_map1")
 
     def collisions(self):
         # teste la collision avec une porte pour se tp
@@ -76,23 +77,18 @@ class MapManager:
                 walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
          
 
-        mobs1 = []
+        mobs = []
 
         for obj in tmx_data.objects:
             if obj.type == 'spawn_mob':
-                mobs1.append((obj.x, obj.y, obj.name))
-
-        mobs2 = []
-        for pos in mobs1:
-            mob = Monstre(pos[2], pos[0], pos[1])
-            mobs2.append(mob)
+                mobs.append(Monstre(obj.name, obj.x, obj.y))
         # On crée un groupe qui contient tous les calques de la map pour povoir tous les injecter en meme temps
         groupe = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4) 
         groupe.add(self.joueur)
-        for i in mobs2:
+        for i in mobs:
             groupe.add(i)
 
-        map = Map(nom, walls, groupe, tmx_data, portails, map_layer, mobs2) # Finalement on crée la carte a partir des infos qu'on a pu récuperer
+        map = Map(nom, walls, groupe, tmx_data, portails, map_layer, mobs) # Finalement on crée la carte a partir des infos qu'on a pu récuperer
         self.maps[nom] = map # On range cette carte dans le dictionnaire
 
     def map_info(self):
@@ -114,10 +110,10 @@ class MapManager:
     def objet(self,nom):
         return self.map_info().tmx_data.get_object_by_name(nom)
     
-    def animation_mob(self):
-        mobs = self.map_info().mobs
-        for i in mobs:
-            i.change_animation('idle', False)
+    def mobs(self):
+        return self.map_info().mobs
+    
+    
 
     def draw(self):
         #on dessine la carte
@@ -125,7 +121,10 @@ class MapManager:
         self.groupe().center(self.joueur.rect.center)
 
     def update(self):
-        self.animation_mob()
+        left, right, mid = pygame.mouse.get_pressed()
+        if left:
+            if len(self.groupe()._spritelist) > 1:
+                self.groupe()._spritelist.pop(1)
         self.groupe().update()
         self.collisions()
         

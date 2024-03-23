@@ -4,7 +4,7 @@ from time import sleep
 class SpriteAnimé(pygame.sprite.Sprite):
     def __init__(self, nom):
         super().__init__()
-        self.sprite_sheet = pygame.image.load(f'graphiques/{nom}.png')
+        self.sprite_sheet = pygame.image.load(f'graphiques/{nom}.png').convert()
         self.index = 0
         self.clock = 0
         self.images = {
