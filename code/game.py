@@ -18,24 +18,14 @@ class Game:
         # On crée un instance de la classe Joueur
         self.joueur = Joueur()
         self.map_manager = MapManager(self.screen, self.joueur)
-        self.xbool = False
 
         #liste des mobs
         self.mobs = []
 
-    def animation_mob(self):
-        mobs = self.map_manager.mobs()
-        for i in mobs:
-            i.change_animation('idle', False)
-
-    def souris(self):
-        self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
-        self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
-        self.joueur.attaque(self.joueur_vect, 'grande_epee', self.screen, self.map_manager.groupe()._spritelist)
-
+        self.xbool = False
 
     def presse(self):
-        #Cette fonction va servir a récupérer les touches pressées par le joueur sur le clavier ou la souris
+    #Cette fonction va servir a récupérer les touches pressées par le joueur sur le clavier ou la souris
         presse = pygame.key.get_pressed()
         
         # Mouvements du joueur avec ZSQD ou les fleches
@@ -56,11 +46,27 @@ class Game:
         else:
             
             self.joueur.change_animation('idle',self.xbool)
+        
+        #self.joueur.weapon = Weapon(self.joueur_vect, 'grande_epee', self.screen, self.map_manager.groupe()._spritelist, self.joueur)
+
+    def attaque(self):
+        self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
+        self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
+        self.joueur.weapon = Weapon(self.joueur_vect, 'grande_epee', self.screen, self.map_manager.groupe()._spritelist, self.joueur)
+
+    def animation_mob(self):
+        mobs = self.map_manager.mobs()
+        for i in mobs:
+            i.change_animation('idle', False)
+            i.move()
+    
 
     def update(self):
         #cette fonction vérifie les parametres du jeu pour gerer les collisions, les interactions, etc...
         self.map_manager.update()
+        self.presse()
         self.animation_mob()
+        self.attaque()
         
         
 
@@ -72,10 +78,9 @@ class Game:
         while jeu:
             #cette boucle va répéter toutes les fonctions qui font marcher le jeu jusqu'a ce qu'on appuie sur la croix
             self.joueur.save_location()
-            self.presse()
             self.update()
             self.map_manager.draw()
-            self.souris()
+            self.joueur.weapon.update()
             pygame.display.flip()
 
             #vérification de l'appui sur la croix

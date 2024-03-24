@@ -5,12 +5,7 @@ from pyscroll.orthographic import BufferedRenderer
 
 from animation import SpriteAnimé
 
-def rotate_pivot(image, angle, pivot, origine):
-    surf = pygame.transform.rotate(image, angle)
 
-    offset = pivot + (origine - pivot).rotate(-angle)
-    rect = surf.get_rect(center = offset)
-    return surf, rect
 
 class Entité(SpriteAnimé):
     def __init__(self, nom, x, y, vitesse):
@@ -23,6 +18,7 @@ class Entité(SpriteAnimé):
         self.vitesse = vitesse # Vitesse du joueur
         self.feet = pygame.Rect(0,0, self.rect.width * 0.5, 1) # On place les pieds du joueur qui vont etre les facteurs de collisions pour plus de réalisme
         self.old_pos = self.position.copy() # On enregistre la position du joueur pour l'y faire revenir en cas de collision
+        
 
     def save_location(self): 
         # On enregistre la position du joueur pour l'y faire revenir en cas de collision
@@ -58,31 +54,91 @@ plus = 40
 class Joueur(Entité):
     def __init__(self):
         super().__init__("Chevalier Rose", 0, 0, 1)
-        
-    def attaque(self, pivot, name, surface, monstres):
-        left, middle, right = pygame.mouse.get_pressed()
-        image_orig =  pygame.transform.rotate(pygame.image.load(f"graphiques/{name}.png"), -90)
-        image_orig =  pygame.transform.scale(image_orig,(image_orig.get_width()*2,image_orig.get_height()*2))
-        image = image_orig
-        plus = 40
-        if left:
-            plus = 60
-            for i in monstres:
-                if self.rect.colliderect(i.rect) and type(i) is Monstre:
-                    print("touché")
-        else:
-            plus = 40
-        pos = pivot + (plus,0)
-        rect = image.get_rect(center = pos)
 
-        mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
-        mouse_offset = mouse_pos - pivot
-
-        angle = -math.degrees(math.atan2(mouse_offset.y, mouse_offset.x))
-        image, rect = rotate_pivot(image_orig, angle, pivot, pos)
-        surface.blit(image, rect)
+    
+    
 
 
 class Monstre(Entité):
-    def __init__(self, nom, x, y):
-        super().__init__(nom, x, y, 0.75)
+    def __init__(self, nom, x, y, joueur):
+        super().__init__(nom, x, y, 0.45)
+
+        self.joueur = joueur
+    def move(self):
+        presse = pygame.key.get_pressed()
+        if self.position[0]<self.joueur.position[0]:
+            self.move_side(1)
+        elif self.position[0]>self.joueur.position[0]:
+            self.move_side(-1)
+        if self.position[1]>self.joueur.position[1]:
+            self.move_high(-1)
+        elif self.position[1]<self.joueur.position[1]:
+            self.move_high(1)
+
+class Weapon:
+    def __init__(self, pivot, name, surface, monstres, joueur):
+        self.pivot = pivot
+        self.surface = surface
+        self.monstres = monstres
+        self.image_orig = pygame.transform.rotate(pygame.image.load(f"graphiques/{name}.png"), -90)
+        self.image_orig =  pygame.transform.scale(self.image_orig,(self.image_orig.get_width()*2,self.image_orig.get_height()*2))
+        self.gim = self.get_image(0,0)
+        self.gim.set_colorkey([0,0,0])
+        self.rect = self.gim.get_rect()
+        self.plus = 40
+        self.joueur = joueur
+        self.position = [self.joueur.position[0], self.joueur.position[1]]
+
+    
+    def get_image(self, x, y):
+        # Fonction pour injecter l'image a des coordonnées données
+        image = pygame.Surface([self.image_orig.get_width(), self.image_orig.get_height()])
+        image.blit(self.image_orig,(0,0),(x,y,self.image_orig.get_width(),self.image_orig.get_height()))
+        return image
+        
+
+
+    def rotate_pivot(self, image, angle, pivot, origine):
+        surf = pygame.transform.rotate(image, angle)
+
+        offset = pivot + (origine - pivot).rotate(-angle)
+        rect = surf.get_rect(center = offset)
+        return surf, rect
+    
+    def basic(self):
+        image = self.image_orig
+        pos = self.pivot + (self.plus,0)
+        rect = image.get_rect(center = pos)
+
+        mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
+        mouse_offset = mouse_pos - self.pivot
+
+        angle = -math.degrees(math.atan2(mouse_offset.y, mouse_offset.x))
+        image, rect = self.rotate_pivot(self.image_orig, angle, self.pivot, pos)
+        self.surface.blit(image, rect)
+
+    def attaque(self):
+        global clock
+        global cooldown_tracker
+        cooldown_tracker += clock.get_time()
+        if cooldown_tracker > 400:
+            cooldown_tracker = 0
+
+        left, middle, right = pygame.mouse.get_pressed()
+        if left and cooldown_tracker == 0:
+            self.plus = 60
+            for i in self.monstres:
+                if self.rect.colliderect(i.rect) and type(i) is Monstre:
+                    self.monstres.remove(i)
+        else:
+            self.plus = 40
+        
+    def update(self):
+        self.position = [self.joueur.position[0], self.joueur.position[1]]
+        self.rect.center = self.position
+        self.attaque()
+        self.basic()
+        
+        
+clock = pygame.time.Clock()
+cooldown_tracker = 0

@@ -27,7 +27,7 @@ class MapManager:
         self.maps = dict() #On va stocker toutes les differentes cartes ici
         self.screen = screen
         self.joueur = joueur
-        self.current_map = 'Map 1' # Map actuelle 
+        self.current_map = 'Spawn' # Map actuelle 
         
         # On crée les cartes 
         self.nouvelle_carte("Spawn", portails=[
@@ -37,7 +37,7 @@ class MapManager:
             Portail('Map 1', "sortie_map1", 'Spawn', 'spawn_spawn')
         ])
 
-        self.teleport("spawn_map1")
+        self.teleport("spawn_spawn")
 
     def collisions(self):
         # teste la collision avec une porte pour se tp
@@ -81,7 +81,7 @@ class MapManager:
 
         for obj in tmx_data.objects:
             if obj.type == 'spawn_mob':
-                mobs.append(Monstre(obj.name, obj.x, obj.y))
+                mobs.append(Monstre(obj.name, obj.x, obj.y, self.joueur))
         # On crée un groupe qui contient tous les calques de la map pour povoir tous les injecter en meme temps
         groupe = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4) 
         groupe.add(self.joueur)
@@ -121,10 +121,6 @@ class MapManager:
         self.groupe().center(self.joueur.rect.center)
 
     def update(self):
-        left, right, mid = pygame.mouse.get_pressed()
-        if left:
-            if len(self.groupe()._spritelist) > 1:
-                self.groupe()._spritelist.pop(1)
         self.groupe().update()
         self.collisions()
         
