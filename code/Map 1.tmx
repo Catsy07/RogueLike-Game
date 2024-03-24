@@ -424,7 +424,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="15" name="objet" visible="0">
+ <objectgroup id="15" name="objet">
   <object id="125" name="spawn_map1" x="800" y="1413.33">
    <point/>
   </object>
@@ -487,7 +487,7 @@
   <object id="219" type="Collisions" x="759" y="1094" width="7.5" height="148.5"/>
   <object id="220" type="Collisions" x="710.5" y="1234.5" width="57" height="53"/>
   <object id="221" type="Collisions" x="709.5" y="1233.5" width="9" height="216.667"/>
-  <object id="222" x="709" y="1441" width="181" height="7.5"/>
+  <object id="222" type="Collisions" x="709" y="1441" width="181" height="7.5"/>
   <object id="223" x="882" y="1242.5" width="9" height="207"/>
   <object id="224" type="Collisions" x="834.333" y="578.333" width="12" height="187.167"/>
   <object id="225" type="Collisions" x="834.166" y="578.833" width="139" height="18"/>
