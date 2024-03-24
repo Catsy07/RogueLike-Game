@@ -505,6 +505,6 @@
   <object id="244" type="Collisions" x="960.666" y="984.833" width="10.5" height="103.5"/>
   <object id="245" type="Collisions" x="833.666" y="1088.83" width="138.5" height="7"/>
   <object id="246" type="Collisions" x="833.666" y="1095.83" width="6" height="147.75"/>
-  <object id="247" type="Collisions" x="837.166" y="1234.83" width="44.5" height="9"/>
+  <object id="247" name="Collisions" type="Collisions" x="837.166" y="1234.83" width="44.5" height="9"/>
  </objectgroup>
 </map>

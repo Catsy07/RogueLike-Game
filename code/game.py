@@ -59,12 +59,13 @@ class Game:
         for i in mobs:
             i.change_animation('idle', False)
             i.move()
+            i.save_location()
     
 
     def update(self):
         #cette fonction vérifie les parametres du jeu pour gerer les collisions, les interactions, etc...
-        self.map_manager.update()
         self.presse()
+        self.map_manager.update()
         self.animation_mob()
         self.attaque()
         
@@ -77,6 +78,7 @@ class Game:
         jeu = True
         while jeu:
             #cette boucle va répéter toutes les fonctions qui font marcher le jeu jusqu'a ce qu'on appuie sur la croix
+            
             self.joueur.save_location()
             self.update()
             self.map_manager.draw()
