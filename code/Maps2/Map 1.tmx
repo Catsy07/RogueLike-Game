@@ -486,7 +486,7 @@
   <object id="218" type="Collisions" x="626.5" y="1088.5" width="138.5" height="7"/>
   <object id="219" type="Collisions" x="759" y="1095.5" width="6" height="147"/>
   <object id="220" type="Collisions" x="717" y="1234.5" width="44.5" height="9"/>
-  <object id="221" x="709.5" y="1233.5" width="9" height="210"/>
+  <object id="221" type="Collisions" x="709.5" y="1233.5" width="9" height="210"/>
   <object id="222" x="709" y="1441" width="173" height="7.5"/>
   <object id="223" x="882" y="1242.5" width="9" height="207"/>
   <object id="224" type="Collisions" x="832.833" y="578.333" width="13.5" height="187.167"/>

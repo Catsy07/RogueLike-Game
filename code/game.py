@@ -58,8 +58,8 @@ class Game:
         mobs = self.map_manager.mobs()
         for i in mobs:
             i.change_animation('idle', False)
-            i.move()
             i.save_location()
+            i.move()
     
 
     def update(self):

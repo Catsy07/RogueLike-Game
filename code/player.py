@@ -8,7 +8,7 @@ from animation import SpriteAnimé
 
 
 class Entité(SpriteAnimé):
-    def __init__(self, nom, x, y, vitesse):
+    def __init__(self, nom, x, y, vitesse, health):
         # On crée la classe "Joueur" qui hérite de la super-classe "Sprite" de Pygame.
         super().__init__(nom)#Image du sprite
         self.image = self.get_image(0,0) # on injecte l'image
@@ -18,6 +18,7 @@ class Entité(SpriteAnimé):
         self.vitesse = vitesse # Vitesse du joueur
         self.feet = pygame.Rect(0,0, self.rect.width * 0.5, 1) # On place les pieds du joueur qui vont etre les facteurs de collisions pour plus de réalisme
         self.old_pos = self.position.copy() # On enregistre la position du joueur pour l'y faire revenir en cas de collision
+        self.health = health 
         
 
     def save_location(self): 
@@ -53,15 +54,15 @@ class Entité(SpriteAnimé):
 plus = 40    
 class Joueur(Entité):
     def __init__(self):
-        super().__init__("Chevalier Rose", 0, 0, 1)
+        super().__init__("Chevalier Rose", 0, 0, 1, 3)
 
     
     
 
 
 class Monstre(Entité):
-    def __init__(self, nom, x, y, joueur):
-        super().__init__(nom, x, y, 0.45)
+    def __init__(self, nom, x, y, joueur, health):
+        super().__init__(nom, x, y, 0.45, health)
 
         self.joueur = joueur
     def move(self):
@@ -120,16 +121,18 @@ class Weapon:
     def attaque(self):
         global clock
         global cooldown_tracker
-        cooldown_tracker += clock.get_time()
-        if cooldown_tracker > 400:
+        cooldown_tracker += 1
+        if cooldown_tracker > 100:
             cooldown_tracker = 0
 
         left, middle, right = pygame.mouse.get_pressed()
-        if left and cooldown_tracker == 0:
+        if left and cooldown_tracker > 0 and cooldown_tracker < 9:
             self.plus = 60
             for i in self.monstres:
                 if self.rect.colliderect(i.rect) and type(i) is Monstre:
-                    self.monstres.remove(i)
+                    i.health -= 1
+                    if i.health <= 0:
+                        self.monstres.remove(i)
         else:
             self.plus = 40
         

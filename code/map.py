@@ -52,8 +52,12 @@ class MapManager:
                     self.teleport(copy_portail.teleport_point)
 
         for sprite in self.groupe().sprites():
-            if sprite.feet.collidelist(self.murs()) > -1:
-                sprite.collision()
+            if type(sprite) == Joueur:
+                if sprite.feet.collidelist(self.murs()) > -1:
+                    sprite.collision()
+            elif type(sprite) == Monstre:
+                if sprite.rect.collidelist(self.murs()) > -1:
+                    sprite.collision()
 
     def teleport(self, nom):
         point = self.objet(nom)
@@ -81,7 +85,7 @@ class MapManager:
 
         for obj in tmx_data.objects:
             if obj.type == 'spawn_mob':
-                mobs.append(Monstre(obj.name, obj.x, obj.y, self.joueur))
+                mobs.append(Monstre(obj.name, obj.x, obj.y, self.joueur, 14))
         # On crée un groupe qui contient tous les calques de la map pour povoir tous les injecter en meme temps
         groupe = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4) 
         groupe.add(self.joueur)
