@@ -6,7 +6,8 @@ from pyscroll.orthographic import BufferedRenderer
 from animation import SpriteAnimé
 
 
-
+last_attack_time = 0
+attack_cooldown = 500
 class Entité(SpriteAnimé):
     def __init__(self, nom, x, y, vitesse, health):
         # On crée la classe "Joueur" qui hérite de la super-classe "Sprite" de Pygame.
@@ -55,6 +56,33 @@ plus = 40
 class Joueur(Entité):
     def __init__(self):
         super().__init__("Chevalier Rose", 0, 0, 1, 3)
+    
+        self.health = 6
+        
+        self.xbool = False
+
+    def presse(self):
+    #Cette fonction va servir a récupérer les touches pressées par le joueur sur le clavier ou la souris
+        presse = pygame.key.get_pressed()
+        
+        # Mouvements du joueur avec ZSQD ou les fleches
+        if presse[pygame.K_UP] or presse[pygame.K_z]:
+            self.move_high(-1)
+            self.change_animation('run',self.xbool)
+        elif presse[pygame.K_DOWN] or presse[pygame.K_s]:
+            self.move_high(1)
+            self.change_animation('run',self.xbool)
+        elif presse[pygame.K_LEFT] or presse[pygame.K_q]:
+            self.move_side(-1)
+            self.xbool = True
+            self.change_animation('run',self.xbool)
+        elif presse[pygame.K_RIGHT] or presse[pygame.K_d]:
+            self.move_side(1)
+            self.xbool = False
+            self.change_animation('run',self.xbool)
+        else:
+            
+            self.change_animation('idle',self.xbool)
 
     
     
@@ -65,16 +93,39 @@ class Monstre(Entité):
         super().__init__(nom, x, y, 0.45, health)
 
         self.joueur = joueur
+        self.last_attack_time = 0
     def move(self):
         presse = pygame.key.get_pressed()
-        if self.position[0]<self.joueur.position[0]:
-            self.move_side(1)
-        elif self.position[0]>self.joueur.position[0]:
-            self.move_side(-1)
-        if self.position[1]>self.joueur.position[1]:
-            self.move_high(-1)
-        elif self.position[1]<self.joueur.position[1]:
-            self.move_high(1)
+        if abs(self.joueur.position[0] - self.position[0]) > 100 or abs(self.joueur.position[1] - self.position[1]) > 100:
+            self.position = self.old_pos
+        elif abs(self.joueur.position[0] - self.position[0]) < 100 and abs(self.joueur.position[1] - self.position[1]) < 100:
+            if self.position[0]<self.joueur.position[0]:
+                self.move_side(1)
+            elif self.position[0]>self.joueur.position[0]:
+                self.move_side(-1)
+            if self.position[1]>self.joueur.position[1]:
+                self.move_high(-1)
+            elif self.position[1]<self.joueur.position[1]:
+                self.move_high(1)
+
+    def show_life(self, surface):
+        i = 0
+        life = pygame.Rect(self.position[0], self.position[1]+20, 16, 3)
+        color = (0,255,0)
+        pygame.draw.rect(surface, color, life)
+        while i < 1000:
+            i+=1
+
+    def attaque(self):
+        global attack_cooldown
+        current_time = pygame.time.get_ticks()
+        if self.rect.colliderect(self.joueur.rect):
+            if current_time - self.last_attack_time > attack_cooldown:
+                print(f'la vie du joueur est a {self.joueur.health} pv')
+                self.joueur.health -= 1
+                self.last_attack_time = current_time
+
+            
 
 class Weapon:
     def __init__(self, pivot, name, surface, monstres, joueur):
@@ -118,21 +169,25 @@ class Weapon:
         image, rect = self.rotate_pivot(self.image_orig, angle, self.pivot, pos)
         self.surface.blit(image, rect)
 
-    def attaque(self):
-        global clock
-        global cooldown_tracker
-        cooldown_tracker += 1
-        if cooldown_tracker > 100:
-            cooldown_tracker = 0
+        
 
+    def attaque(self):
+        global last_attack_time
+        global attack_cooldown
         left, middle, right = pygame.mouse.get_pressed()
-        if left and cooldown_tracker > 0 and cooldown_tracker < 9:
-            self.plus = 60
+        current_time = pygame.time.get_ticks()
+
+        # Vérifier si le bouton gauche de la souris est enfoncé et si le cooldown est terminé
+        if left and current_time - last_attack_time > attack_cooldown:
+            self.plus = 65
             for i in self.monstres:
-                if self.rect.colliderect(i.rect) and type(i) is Monstre:
+                if self.rect.colliderect(i.rect) and isinstance(i, Monstre):
                     i.health -= 1
+                    i.show_life(self.surface)
                     if i.health <= 0:
                         self.monstres.remove(i)
+            # Mettre à jour le temps de la dernière attaque
+            last_attack_time = current_time
         else:
             self.plus = 40
         
@@ -142,6 +197,5 @@ class Weapon:
         self.attaque()
         self.basic()
         
-        
-clock = pygame.time.Clock()
-cooldown_tracker = 0
+
+  # Cooldown en millisecondes (par exemple, 500ms)

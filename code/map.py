@@ -85,7 +85,7 @@ class MapManager:
 
         for obj in tmx_data.objects:
             if obj.type == 'spawn_mob':
-                mobs.append(Monstre(obj.name, obj.x, obj.y, self.joueur, 14))
+                mobs.append(Monstre(obj.name, obj.x, obj.y, self.joueur, 3))
         # On crée un groupe qui contient tous les calques de la map pour povoir tous les injecter en meme temps
         groupe = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4) 
         groupe.add(self.joueur)

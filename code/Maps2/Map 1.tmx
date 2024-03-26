@@ -433,7 +433,7 @@
    <point/>
   </object>
   <object id="183" name="sortie_map1" x="309.833" y="509.833" width="47.3333" height="48.6667"/>
-  <object id="184" name="Chevalier Rose" type="spawn_mob" x="693.167" y="1045.17">
+  <object id="184" name="demon" type="spawn_mob" x="693.167" y="1045.17">
    <point/>
   </object>
   <object id="185" name="bebe_monstre" type="spawn_mob" x="805.833" y="538.5">
@@ -448,7 +448,7 @@
   <object id="188" name="bebe_monstre" type="spawn_mob" x="692.167" y="856.833">
    <point/>
   </object>
-  <object id="189" name="Chevalier Rose" type="spawn_mob" x="915.833" y="1052.5">
+  <object id="189" name="demon" type="spawn_mob" x="915.833" y="1052.5">
    <point/>
   </object>
   <object id="190" name="bebe_monstre" type="spawn_mob" x="1312.83" y="950.5">
