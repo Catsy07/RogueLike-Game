@@ -131,7 +131,7 @@ class Game:
             PLAY_RECT = PLAY_TEXT.get_rect(center=(self.screen_width/2, 260))
             self.screen.blit(PLAY_TEXT, PLAY_RECT)
 
-            PLAY_BACK = Button(image=None, pos=(self.screen_width/2, 460), 
+            PLAY_BACK = Button(image=None, pos=(self.screen_width/2, 660), 
                                 text_input="Menu", font=get_font(45), base_color="White", hovering_color="Gray")
 
             PLAY_BACK.changeColor(PLAY_MOUSE_POS)

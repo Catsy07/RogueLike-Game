@@ -442,10 +442,10 @@
   <object id="186" name="bebe_monstre" type="spawn_mob" x="329.5" y="941.833">
    <point/>
   </object>
-  <object id="187" name="bebe_orc" type="spawn_mob" x="909.5" y="860.167">
+  <object id="187" name="orc" type="spawn_mob" x="909.5" y="860.167">
    <point/>
   </object>
-  <object id="188" name="bebe_monstre" type="spawn_mob" x="692.167" y="856.833">
+  <object id="188" name="orc" type="spawn_mob" x="692.167" y="856.833">
    <point/>
   </object>
   <object id="189" name="demon" type="spawn_mob" x="915.833" y="1052.5">
