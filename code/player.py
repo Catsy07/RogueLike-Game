@@ -15,6 +15,8 @@ class Entité(SpriteAnimé):
         self.image = self.get_image(0,0) # on injecte l'image
         self.image.set_colorkey([0,0,0])
         self.rect = self.image.get_rect() # On définit la "hitbox" du joueur en fonction de la taille de l'image
+        self.rect[1] += 20
+        self.rect[3] -=10
         self.position = [x,y] # Position du joueur sur la carte
         self.vitesse = vitesse # Vitesse du joueur
         self.feet = pygame.Rect(0,0, self.rect.width * 0.5, 1) # On place les pieds du joueur qui vont etre les facteurs de collisions pour plus de réalisme
@@ -52,6 +54,10 @@ class Entité(SpriteAnimé):
         image = pygame.Surface([16,32])
         image.blit(self.sprite_sheet,(0,0),(x,y,16,32))
         return image
+    
+    def draw_rect(self, surface):
+        # Dessiner le rectangle de collision sur la surface spécifiée
+        pygame.draw.rect(surface, (255, 0, 0), self.rect, 2)
 plus = 40    
 class Joueur(Entité):
     def __init__(self):
@@ -90,7 +96,7 @@ class Joueur(Entité):
 
 class Monstre(Entité):
     def __init__(self, nom, x, y, joueur, health):
-        super().__init__(nom, x, y, 0.45, health)
+        super().__init__(nom, x, y, 0.30, health)
 
         self.joueur = joueur
         self.last_attack_time = 0
@@ -133,7 +139,7 @@ class Weapon:
         self.surface = surface
         self.monstres = monstres
         self.image_orig = pygame.transform.rotate(pygame.image.load(f"graphiques/{name}.png"), -90)
-        self.image_orig =  pygame.transform.scale(self.image_orig,(self.image_orig.get_width()*2,self.image_orig.get_height()*2))
+        self.image_orig =  pygame.transform.scale(self.image_orig,(self.image_orig.get_width()*2,self.image_orig.get_height()*2.5))
         self.gim = self.get_image(0,0)
         self.gim.set_colorkey([0,0,0])
         self.rect = self.gim.get_rect()
@@ -158,43 +164,70 @@ class Weapon:
         return surf, rect
     
     def basic(self):
-        image = self.image_orig
-        pos = self.pivot + (self.plus,0)
-        rect = image.get_rect(center = pos)
-
-        mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
-        mouse_offset = mouse_pos - self.pivot
-
-        angle = -math.degrees(math.atan2(mouse_offset.y, mouse_offset.x))
-        image, rect = self.rotate_pivot(self.image_orig, angle, self.pivot, pos)
-        self.surface.blit(image, rect)
-
-        
-
-    def attaque(self):
         global last_attack_time
         global attack_cooldown
         left, middle, right = pygame.mouse.get_pressed()
         current_time = pygame.time.get_ticks()
 
-        # Vérifier si le bouton gauche de la souris est enfoncé et si le cooldown est terminé
+        image = self.image_orig
         if left and current_time - last_attack_time > attack_cooldown:
             self.plus = 65
+        else:
+            self.plus = 40
+        pos = self.pivot + (self.plus,0)
+        rect = image.get_rect(center = pos)
+
+        mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
+        mouse_offset = mouse_pos - self.pivot
+        angle = -math.degrees(math.atan2(mouse_offset.y, mouse_offset.x))
+        
+        if left and current_time - last_attack_time > attack_cooldown:
+            new_angle = 0
+            if angle < 0:
+                new_angle = angle + 360               
+            else:
+                new_angle = angle  
+            rect = pygame.Rect(0,0,20,25)
+            if (new_angle >= 0 and new_angle < 22.5) or (new_angle > 337.5 and new_angle < 360):
+                rect.midleft = self.joueur.position
+            elif (new_angle >= 22.5 and new_angle < 67.5):
+                rect.bottomleft = self.joueur.position
+            elif (new_angle >= 67.5 and new_angle < 112.5):
+                rect.midbottom = self.joueur.position
+            elif (new_angle >= 112.5 and new_angle < 157.5):
+                rect.bottomright = self.joueur.position
+            elif (new_angle >= 157.5 and new_angle < 202.5):
+                rect.midright = self.joueur.position
+            elif (new_angle >= 202.5 and new_angle < 247.5):
+                rect.topright = self.joueur.position
+            elif (new_angle >= 247.5 and new_angle < 292.5):
+                rect.midtop = self.joueur.position
+            elif (new_angle >= 292.5 and new_angle < 337.5):
+                rect.topleft = self.joueur.position
+            
+            pygame.draw.rect(self.surface, (0,255,0), rect, 2)
             for i in self.monstres:
-                if self.rect.colliderect(i.rect) and isinstance(i, Monstre):
+                if rect.colliderect(i.rect) and isinstance(i, Monstre):
+                    
                     i.health -= 1
                     i.show_life(self.surface)
                     if i.health <= 0:
                         self.monstres.remove(i)
+                        i.rect.center = (0,0)
+
             # Mettre à jour le temps de la dernière attaque
             last_attack_time = current_time
-        else:
-            self.plus = 40
+        image, rect = self.rotate_pivot(self.image_orig, angle, self.pivot, pos)
+        self.surface.blit(image, rect)
+        # Vérifier si le bouton gauche de la souris est enfoncé et si le cooldown est terminé
+        
+
+        
+        
         
     def update(self):
         self.position = [self.joueur.position[0], self.joueur.position[1]]
         self.rect.center = self.position
-        self.attaque()
         self.basic()
         
 

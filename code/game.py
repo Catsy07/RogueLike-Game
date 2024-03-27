@@ -7,7 +7,7 @@ import math
 from player import *
 
 
-BG = pygame.image.load("graphiques/Background.png")
+BG = pygame.transform.scale(pygame.image.load("graphiques/Background.png"), (1520, 1024))
 
 def get_font(size): # Returns Press-Start-2P in the desired size
     return pygame.font.Font("graphiques/font.ttf", size)
@@ -34,6 +34,7 @@ class Game:
         self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
         self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
         self.joueur.weapon = Weapon(self.joueur_vect, 'grande_epee', self.screen, self.map_manager.groupe()._spritelist, self.joueur)
+    
 
     def update_mobs(self):
         mobs = self.map_manager.mobs()
@@ -42,13 +43,14 @@ class Game:
             i.save_location()
             i.move()
             i.attaque()
+            i.draw_rect(self.screen)
+            
     
 
     def update(self):
         #cette fonction vérifie les parametres du jeu pour gerer les collisions, les interactions, etc...
         self.joueur.presse()
         self.map_manager.update()
-        self.update_mobs()
         self.attaque()
         
     def main_menu(self):
@@ -58,14 +60,14 @@ class Game:
 
             MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-            MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
-            MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
+            MENU_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
+            MENU_RECT = MENU_TEXT.get_rect(center=(self.screen_width/2, 150))
 
-            PLAY_BUTTON = Button(image=pygame.image.load("graphiques/Play Rect.png"), pos=(640, 250), 
+            PLAY_BUTTON = Button(image=pygame.image.load("graphiques/Play Rect.png"), pos=(self.screen_width/2, 350), 
                                 text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-            OPTIONS_BUTTON = Button(image=pygame.image.load("graphiques/Options Rect.png"), pos=(640, 400), 
+            OPTIONS_BUTTON = Button(image=pygame.image.load("graphiques/Options Rect.png"), pos=(self.screen_width/2, 500), 
                                 text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-            QUIT_BUTTON = Button(image=pygame.image.load("graphiques/Quit Rect.png"), pos=(640, 550), 
+            QUIT_BUTTON = Button(image=pygame.image.load("graphiques/Quit Rect.png"), pos=(self.screen_width/2, 650), 
                                 text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
             self.screen.blit(MENU_TEXT, MENU_RECT)
@@ -101,6 +103,8 @@ class Game:
             self.update()
             self.map_manager.draw()
             self.joueur.weapon.update()
+            self.update_mobs()
+            self.joueur.draw_rect(self.screen)
             pygame.display.flip()
 
             #vérification de l'appui sur la croix

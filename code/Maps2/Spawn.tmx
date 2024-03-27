@@ -241,7 +241,7 @@
   <object id="23" type="Collisions" x="353.067" y="220.7" width="45.8667" height="48.2"/>
   <object id="24" type="Collisions" x="398.467" y="224.1" width="18.2667" height="29"/>
   <object id="25" type="Collisions" x="257.033" y="384.667" width="14.7333" height="34.2667"/>
-  <object id="26" name="bebe_orc" type="spawn_mob" x="261" y="278">
+  <object id="26" name="demon" type="spawn_mob" x="261" y="278">
    <point/>
   </object>
  </objectgroup>
