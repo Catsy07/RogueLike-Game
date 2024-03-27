@@ -7,10 +7,10 @@ import math
 from player import *
 
 
-BG = pygame.transform.scale(pygame.image.load("graphiques/Background.png"), (1520, 1024))
+BG = pygame.transform.scale(pygame.image.load("graphiques/menu/Background.png"), (1520, 1024))
 
 def get_font(size): # Returns Press-Start-2P in the desired size
-    return pygame.font.Font("graphiques/font.ttf", size)
+    return pygame.font.Font("graphiques/menu/font.ttf", size)
 
 class Game:
     def __init__(self):
@@ -39,11 +39,18 @@ class Game:
     def update_mobs(self):
         mobs = self.map_manager.mobs()
         for i in mobs:
+            if i.health <= 0:
+                del(i)
+                continue
             i.change_animation('idle', False)
             i.save_location()
             i.move()
             i.attaque()
-            i.draw_rect(self.screen)
+            i.show_life(self.screen, self.map_manager.map_layer().translate_point(i.position), i.health)
+
+    def check_stop(self):
+        if self.joueur.health <= 0:
+            self.game_over()
             
     
 
@@ -63,11 +70,11 @@ class Game:
             MENU_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
             MENU_RECT = MENU_TEXT.get_rect(center=(self.screen_width/2, 150))
 
-            PLAY_BUTTON = Button(image=pygame.image.load("graphiques/Play Rect.png"), pos=(self.screen_width/2, 350), 
+            PLAY_BUTTON = Button(image=pygame.image.load("graphiques/menu/Play Rect.png"), pos=(self.screen_width/2, 350), 
                                 text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-            OPTIONS_BUTTON = Button(image=pygame.image.load("graphiques/Options Rect.png"), pos=(self.screen_width/2, 500), 
+            OPTIONS_BUTTON = Button(image=pygame.image.load("graphiques/menu/Options Rect.png"), pos=(self.screen_width/2, 500), 
                                 text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-            QUIT_BUTTON = Button(image=pygame.image.load("graphiques/Quit Rect.png"), pos=(self.screen_width/2, 650), 
+            QUIT_BUTTON = Button(image=pygame.image.load("graphiques/menu/Quit Rect.png"), pos=(self.screen_width/2, 650), 
                                 text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
             self.screen.blit(MENU_TEXT, MENU_RECT)
@@ -98,13 +105,12 @@ class Game:
         jeu = True
         while jeu:
             #cette boucle va répéter toutes les fonctions qui font marcher le jeu jusqu'a ce qu'on appuie sur la croix
-            
+            self.check_stop()
             self.joueur.save_location()
             self.update()
             self.map_manager.draw()
             self.joueur.weapon.update()
             self.update_mobs()
-            self.joueur.draw_rect(self.screen)
             pygame.display.flip()
 
             #vérification de l'appui sur la croix
@@ -115,7 +121,30 @@ class Game:
             clock.tick(120)
         pygame.quit()
 
+    def game_over(self):
+        while True:
+            PLAY_MOUSE_POS = pygame.mouse.get_pos()
 
+            self.screen.fill("black")
+
+            PLAY_TEXT = get_font(75).render("YOU LOST...", True, "White")
+            PLAY_RECT = PLAY_TEXT.get_rect(center=(self.screen_width/2, 260))
+            self.screen.blit(PLAY_TEXT, PLAY_RECT)
+
+            PLAY_BACK = Button(image=None, pos=(self.screen_width/2, 460), 
+                                text_input="Menu", font=get_font(45), base_color="White", hovering_color="Gray")
+
+            PLAY_BACK.changeColor(PLAY_MOUSE_POS)
+            PLAY_BACK.update(self.screen)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
+                        self.main_menu()
+
+            pygame.display.update()
 class Button():
 	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
 		self.image = image

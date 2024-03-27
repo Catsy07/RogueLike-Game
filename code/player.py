@@ -54,10 +54,6 @@ class Entité(SpriteAnimé):
         image = pygame.Surface([16,32])
         image.blit(self.sprite_sheet,(0,0),(x,y,16,32))
         return image
-    
-    def draw_rect(self, surface):
-        # Dessiner le rectangle de collision sur la surface spécifiée
-        pygame.draw.rect(surface, (255, 0, 0), self.rect, 2)
 plus = 40    
 class Joueur(Entité):
     def __init__(self):
@@ -114,13 +110,14 @@ class Monstre(Entité):
             elif self.position[1]<self.joueur.position[1]:
                 self.move_high(1)
 
-    def show_life(self, surface):
-        i = 0
-        life = pygame.Rect(self.position[0], self.position[1]+20, 16, 3)
-        color = (0,255,0)
-        pygame.draw.rect(surface, color, life)
-        while i < 1000:
-            i+=1
+    def show_life(self, surface, position, vie):
+        life = pygame.Rect(position[0]-20, position[1]-25, (32*vie)/3, 4)
+        dead = pygame.Rect(position[0]-20, position[1]-25, (32*3)/3, 4)
+        
+        color1 = (0,255,0)
+        color2 = (255,0,0)
+        pygame.draw.rect(surface, color2, dead)
+        pygame.draw.rect(surface, color1, life)
 
     def attaque(self):
         global attack_cooldown
@@ -138,7 +135,7 @@ class Weapon:
         self.pivot = pivot
         self.surface = surface
         self.monstres = monstres
-        self.image_orig = pygame.transform.rotate(pygame.image.load(f"graphiques/{name}.png"), -90)
+        self.image_orig = pygame.transform.rotate(pygame.image.load(f"graphiques/Armes/{name}.png"), -90)
         self.image_orig =  pygame.transform.scale(self.image_orig,(self.image_orig.get_width()*2,self.image_orig.get_height()*2.5))
         self.gim = self.get_image(0,0)
         self.gim.set_colorkey([0,0,0])
@@ -204,16 +201,13 @@ class Weapon:
                 rect.midtop = self.joueur.position
             elif (new_angle >= 292.5 and new_angle < 337.5):
                 rect.topleft = self.joueur.position
-            
-            pygame.draw.rect(self.surface, (0,255,0), rect, 2)
             for i in self.monstres:
                 if rect.colliderect(i.rect) and isinstance(i, Monstre):
                     
                     i.health -= 1
-                    i.show_life(self.surface)
                     if i.health <= 0:
                         self.monstres.remove(i)
-                        i.rect.center = (0,0)
+                        del(i)
 
             # Mettre à jour le temps de la dernière attaque
             last_attack_time = current_time
