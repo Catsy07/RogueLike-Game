@@ -111,6 +111,7 @@ class Game:
             self.map_manager.draw()
             self.joueur.weapon.update()
             self.update_mobs()
+            self.joueur.show_life(self.screen)
             pygame.display.flip()
 
             #vérification de l'appui sur la croix

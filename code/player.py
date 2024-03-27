@@ -59,7 +59,7 @@ class Joueur(Entité):
     def __init__(self):
         super().__init__("Chevalier Rose", 0, 0, 1, 3)
     
-        self.health = 6
+        self.health = 12
         
         self.xbool = False
 
@@ -86,7 +86,21 @@ class Joueur(Entité):
             
             self.change_animation('idle',self.xbool)
 
-    
+    def show_life(self, surface):
+        img_plein = pygame.transform.scale(pygame.image.load('graphiques/plein.png'), (45,42))
+        img_moitie = pygame.transform.scale(pygame.image.load('graphiques/moitie.png'), (45,42))
+        if self.health % 2 != 0:
+            plein = (self.health - 1) / 2
+            moitié = 1
+        else:
+            plein = self.health/2
+            moitié = 0
+        x = 100
+        for i in range(int(plein)):
+            surface.blit(img_plein,(x,50,30,28))
+            x += 45
+        if moitié == 1:
+            surface.blit(img_moitie,(x,50,30,28))
     
 
 
@@ -124,7 +138,6 @@ class Monstre(Entité):
         current_time = pygame.time.get_ticks()
         if self.rect.colliderect(self.joueur.rect):
             if current_time - self.last_attack_time > attack_cooldown:
-                print(f'la vie du joueur est a {self.joueur.health} pv')
                 self.joueur.health -= 1
                 self.last_attack_time = current_time
 
@@ -187,6 +200,7 @@ class Weapon:
             rect = pygame.Rect(0,0,20,25)
             if (new_angle >= 0 and new_angle < 22.5) or (new_angle > 337.5 and new_angle < 360):
                 rect.midleft = self.joueur.position
+                rect[2] = 25
             elif (new_angle >= 22.5 and new_angle < 67.5):
                 rect.bottomleft = self.joueur.position
             elif (new_angle >= 67.5 and new_angle < 112.5):
