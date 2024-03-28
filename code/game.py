@@ -17,7 +17,7 @@ class Game:
 
         # Ici, on définis la taille de la fenetre puis on l'injecte sur l'écran.
         self.screen_width = 1520
-        self.screen_height = 1024
+        self.screen_height = 800
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("Soul Knight")
 
@@ -28,7 +28,7 @@ class Game:
         #liste des mobs
         self.mobs = []
         
-        #self.joueur.weapon = Weapon(self.joueur_vect, 'grande_epee', self.screen, self.map_manager.groupe()._spritelist, self.joueur)
+        self.img_mouse = pygame.image.load("graphiques/menu/mouse.png")
 
     def attaque(self):
         self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
@@ -72,14 +72,14 @@ class Game:
 
             PLAY_BUTTON = Button(image=pygame.image.load("graphiques/menu/Play Rect.png"), pos=(self.screen_width/2, 350), 
                                 text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-            OPTIONS_BUTTON = Button(image=pygame.image.load("graphiques/menu/Options Rect.png"), pos=(self.screen_width/2, 500), 
-                                text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+            INFORMATIONS_BUTTON = Button(image=pygame.image.load("graphiques/menu/Informations Rect.png"), pos=(self.screen_width/2, 500), 
+                                text_input="INFOS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
             QUIT_BUTTON = Button(image=pygame.image.load("graphiques/menu/Quit Rect.png"), pos=(self.screen_width/2, 650), 
                                 text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
             self.screen.blit(MENU_TEXT, MENU_RECT)
 
-            for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+            for button in [PLAY_BUTTON, INFORMATIONS_BUTTON, QUIT_BUTTON]:
                 button.changeColor(MENU_MOUSE_POS)
                 button.update(self.screen)
             
@@ -90,11 +90,12 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                         self.go()
-                    if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
-                        pass
+                    if INFORMATIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        self.informations()
                     if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                         jeu = False
                         pygame.quit()
+                
 
             pygame.display.update()
     
@@ -122,6 +123,46 @@ class Game:
             clock.tick(120)
         pygame.quit()
 
+    def informations(self):
+        infos = True
+        while True:
+            self.screen.blit(BG, (0, 0))
+
+            INFOS_MOUSE_POS = pygame.mouse.get_pos()
+            
+            INFOS_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
+            INFOS_RECT = INFOS_TEXT.get_rect(center=(self.screen_width/2, 150))
+        
+            KEYS_BUTTON = Button(image=pygame.image.load("graphiques/menu/Informations Rect.png"), pos=(self.screen_width/2, 350), 
+                                text_input="KEYS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+        
+            ATTACK_BUTTON = Button(image=pygame.image.load("graphiques/menu/Informations Rect.png"), pos=(self.screen_width/2, 500), 
+                                    text_input="ATTACK", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+            
+            RETURN_BUTTON = Button(image=None, pos=(100, 150), 
+                                    text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
+            
+            self.screen.blit(INFOS_TEXT, INFOS_RECT)
+
+            for button in [KEYS_BUTTON, ATTACK_BUTTON, RETURN_BUTTON]:
+                button.changeColor(INFOS_MOUSE_POS)
+                button.update(self.screen)
+                
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    infos = False
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if KEYS_BUTTON.checkForInput(INFOS_MOUSE_POS):
+                        self.keys_infos()
+                    if ATTACK_BUTTON.checkForInput(INFOS_MOUSE_POS):
+                        self.attack_infos()
+                    if RETURN_BUTTON.checkForInput(INFOS_MOUSE_POS):
+                        self.main_menu()
+                    
+
+                pygame.display.update()
+    
     def game_over(self):
         while True:
             PLAY_MOUSE_POS = pygame.mouse.get_pos()
@@ -146,6 +187,114 @@ class Game:
                         self.main_menu()
 
             pygame.display.update()
+            
+    def keys_infos(self):
+
+        while True:
+            self.screen.blit(BG, (0, 0))
+
+            KEYS_MOUSE_POS = pygame.mouse.get_pos()
+            
+            KEYS_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
+            KEYS_RECT = KEYS_TEXT.get_rect(center=(self.screen_width/2, 150))
+            
+        
+            Z_BUTTON = Button(image=None, pos=(self.screen_width/2, 500),
+                          text_input="Z", font=get_font(80), base_color="White", hovering_color="Gray")
+        
+            Q_BUTTON = Button(image=None, pos=(self.screen_width/2 - 110, 610), 
+                                text_input="Q", font=get_font(80), base_color="White", hovering_color="Gray")
+        
+            S_BUTTON = Button(image=None, pos=(self.screen_width/2, 610), 
+                                text_input="S", font=get_font(80), base_color="White", hovering_color="Gray")
+        
+            D_BUTTON = Button(image=None, pos=(self.screen_width/2 + 110, 610), 
+                                text_input="D", font=get_font(80), base_color="White", hovering_color="Gray")
+            
+            RETURN_BUTTON = Button(image=None, pos=(100, 150), 
+                                    text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
+            
+            self.screen.blit(KEYS_TEXT, KEYS_RECT)
+
+            for button in [Z_BUTTON, Q_BUTTON, S_BUTTON, D_BUTTON, RETURN_BUTTON]:
+                button.changeColor(KEYS_MOUSE_POS)
+                button.update(self.screen)
+                
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    
+                    if Z_BUTTON.checkForInput(KEYS_MOUSE_POS):
+                        
+                        Z_TEXT = get_font(100).render("FORWARD", True, "White")
+                        Z_RECT = Z_TEXT.get_rect(center=(self.screen_width/2, 300))
+                        self.screen.blit(Z_TEXT, Z_RECT)
+                        
+                    if Q_BUTTON.checkForInput(KEYS_MOUSE_POS):
+                        
+                        Q_TEXT = get_font(100).render("LEFT", True, "White")
+                        Q_RECT = Q_TEXT.get_rect(center=(self.screen_width/2, 300))
+                        self.screen.blit(Q_TEXT, Q_RECT)
+                        
+                    if S_BUTTON.checkForInput(KEYS_MOUSE_POS):
+                        
+                        S_TEXT = get_font(100).render("BACKWARD", True, "White")
+                        S_RECT = S_TEXT.get_rect(center=(self.screen_width/2, 300))
+                        self.screen.blit(S_TEXT, S_RECT)
+                        
+                    if D_BUTTON.checkForInput(KEYS_MOUSE_POS):
+                        
+                        D_TEXT = get_font(100).render("RIGHT", True, "White")
+                        D_RECT = D_TEXT.get_rect(center=(self.screen_width/2, 300))
+                        self.screen.blit(D_TEXT, D_RECT)
+                        
+                    if RETURN_BUTTON.checkForInput(KEYS_MOUSE_POS):
+                        
+                        self.informations()
+                    
+
+                pygame.display.update()
+    
+    def attack_infos(self):
+        while True:
+            self.screen.blit(BG, (0, 0))
+
+            ATTACK_MOUSE_POS = pygame.mouse.get_pos()
+            
+            ATTACK_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
+            ATTACK_RECT = ATTACK_TEXT.get_rect(center=(self.screen_width/2, 150))
+            
+        
+            MOUSE_BUTTON = Button(image=pygame.transform.scale(self.img_mouse, (110,210)), pos=(self.screen_width/2, 500),
+                          text_input="", font=get_font(100), base_color="White", hovering_color="Gray")
+            
+            RETURN_BUTTON = Button(image=None, pos=(100, 150), 
+                                    text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
+            
+            self.screen.blit(ATTACK_TEXT, ATTACK_RECT)
+
+            for button in [MOUSE_BUTTON, RETURN_BUTTON]:
+                button.changeColor(ATTACK_MOUSE_POS)
+                button.update(self.screen)
+                
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    
+                    if MOUSE_BUTTON.checkForInput(ATTACK_MOUSE_POS):
+                        
+                        MOUSE_TEXT = get_font(50).render("LEFT CLICK", True, "White")
+                        MOUSE_RECT = MOUSE_TEXT.get_rect(center=(self.screen_width/2, 300))
+                        self.screen.blit(MOUSE_TEXT, MOUSE_RECT)
+                        
+                    if RETURN_BUTTON.checkForInput(ATTACK_MOUSE_POS):
+                        
+                        self.informations()
+                        
+                        
+                pygame.display.update()
 class Button():
 	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
 		self.image = image

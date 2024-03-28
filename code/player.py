@@ -59,7 +59,7 @@ class Joueur(Entité):
     def __init__(self):
         super().__init__("Chevalier Rose", 0, 0, 1, 3)
     
-        self.health = 12
+        self.health = 6
         
         self.xbool = False
 
@@ -82,9 +82,12 @@ class Joueur(Entité):
             self.move_side(1)
             self.xbool = False
             self.change_animation('run',self.xbool)
-        else:
-            
+        else: 
             self.change_animation('idle',self.xbool)
+        
+        if presse[pygame.K_i]:
+            self.health += 1
+        
 
     def show_life(self, surface):
         img_plein = pygame.transform.scale(pygame.image.load('graphiques/plein.png'), (45,42))
@@ -110,6 +113,7 @@ class Monstre(Entité):
 
         self.joueur = joueur
         self.last_attack_time = 0
+        self.attack_cooldown = 700
     def move(self):
         presse = pygame.key.get_pressed()
         if abs(self.joueur.position[0] - self.position[0]) > 100 or abs(self.joueur.position[1] - self.position[1]) > 100:
@@ -134,10 +138,10 @@ class Monstre(Entité):
         pygame.draw.rect(surface, color1, life)
 
     def attaque(self):
-        global attack_cooldown
+
         current_time = pygame.time.get_ticks()
         if self.rect.colliderect(self.joueur.rect):
-            if current_time - self.last_attack_time > attack_cooldown:
+            if current_time - self.last_attack_time > self.attack_cooldown:
                 self.joueur.health -= 1
                 self.last_attack_time = current_time
 
