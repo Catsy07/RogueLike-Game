@@ -16,8 +16,7 @@ class Game:
     def __init__(self):
 
         # Ici, on définis la taille de la fenetre puis on l'injecte sur l'écran.
-        self.screen_width = 1520
-        self.screen_height = 800
+        self.sc        self.screen_height = 800
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("Soul Knight")
 
@@ -266,7 +265,7 @@ class Game:
             ATTACK_RECT = ATTACK_TEXT.get_rect(center=(self.screen_width/2, 150))
             
         
-            MOUSE_BUTTON = Button(image=pygame.transform.scale(self.img_mouse, (110,210)), pos=(self.screen_width/2, 500),
+            MOUSE_BUTTON = Button(image=pygame.transform.scale(self.img_mouse, (100,100)), pos=(self.screen_width/2, 500),
                           text_input="", font=get_font(100), base_color="White", hovering_color="Gray")
             
             RETURN_BUTTON = Button(image=None, pos=(100, 150), 
@@ -285,7 +284,7 @@ class Game:
                     
                     if MOUSE_BUTTON.checkForInput(ATTACK_MOUSE_POS):
                         
-                        MOUSE_TEXT = get_font(50).render("LEFT CLICK", True, "White")
+                        MOUSE_TEXT = get_font(100).render("LEFT CLICK", True, "White")
                         MOUSE_RECT = MOUSE_TEXT.get_rect(center=(self.screen_width/2, 300))
                         self.screen.blit(MOUSE_TEXT, MOUSE_RECT)
                         
@@ -295,6 +294,11 @@ class Game:
                         
                         
                 pygame.display.update()
+
+                    if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
+                        self.main_menu()
+
+            pygame.display.update()
 class Button():
 	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
 		self.image = image
