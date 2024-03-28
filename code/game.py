@@ -16,7 +16,8 @@ class Game:
     def __init__(self):
 
         # Ici, on définis la taille de la fenetre puis on l'injecte sur l'écran.
-        self.sc        self.screen_height = 800
+        self.screen_width = 1520
+        self.screen_height = 800
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("Soul Knight")
 
@@ -294,11 +295,6 @@ class Game:
                         
                         
                 pygame.display.update()
-
-                    if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
-                        self.main_menu()
-
-            pygame.display.update()
 class Button():
 	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
 		self.image = image
