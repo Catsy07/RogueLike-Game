@@ -12,6 +12,7 @@ class Entité(SpriteAnimé):
     def __init__(self, nom, x, y, vitesse, health):
         # On crée la classe "Joueur" qui hérite de la super-classe "Sprite" de Pygame.
         super().__init__(nom)#Image du sprite
+        self.zizi = 'Zizi'
         self.image = self.get_image(0,0) # on injecte l'image
         self.image.set_colorkey([0,0,0])
         self.rect = self.image.get_rect() # On définit la "hitbox" du joueur en fonction de la taille de l'image
