@@ -60,8 +60,10 @@ class Joueur(Entité):
         super().__init__("Chevalier Rose", 0, 0, 1, 3)
     
         self.health = 6
-        
+        self.coucou = "coucou"
         self.xbool = False
+
+        self.inventory = []
 
     def presse(self):
     #Cette fonction va servir a récupérer les touches pressées par le joueur sur le clavier ou la souris
@@ -85,13 +87,10 @@ class Joueur(Entité):
         else: 
             self.change_animation('idle',self.xbool)
         
-        if presse[pygame.K_i]:
-            self.health += 1
-        
 
     def show_life(self, surface):
-        img_plein = pygame.transform.scale(pygame.image.load('graphiques/plein.png'), (45,42))
-        img_moitie = pygame.transform.scale(pygame.image.load('graphiques/moitie.png'), (45,42))
+        img_plein = pygame.transform.scale(pygame.image.load('graphiques/autres/plein.png'), (45,42))
+        img_moitie = pygame.transform.scale(pygame.image.load('graphiques/autres/moitie.png'), (45,42))
         if self.health % 2 != 0:
             plein = (self.health - 1) / 2
             moitié = 1
@@ -105,6 +104,15 @@ class Joueur(Entité):
         if moitié == 1:
             surface.blit(img_moitie,(x,50,30,28))
     
+     
+    def use_item(self):
+        left, middle, right = pygame.mouse.get_pressed()
+        for i in self.inventory:
+            if right:
+                if i.type == 'heal':
+                    self.health += i.level
+                    self.inventory.remove(i)
+                    
 
 
 class Monstre(Entité):
@@ -243,4 +251,11 @@ class Weapon:
         self.basic()
         
 
-  # Cooldown en millisecondes (par exemple, 500ms)
+class Item:
+    def __init__(self, name, quantity, type, level, joueur):
+        self.name = name
+        self.quantity = quantity
+        self.type = type
+        self.level = level
+        self.joueur = joueur
+        self.image = pygame.image.load(f'graphiques/Items/{name}.png')

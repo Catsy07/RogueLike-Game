@@ -30,10 +30,14 @@ class Game:
         
         self.img_mouse = pygame.image.load("graphiques/menu/mouse.png")
 
+        potion = Item('potion', 1, 'heal', 2, self.joueur)
+        self.joueur.inventory.append(potion)
     def attaque(self):
         self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
         self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
         self.joueur.weapon = Weapon(self.joueur_vect, 'grande_epee', self.screen, self.map_manager.groupe()._spritelist, self.joueur)
+        self.joueur.use_item()
+        print(self.joueur.inventory)
     
 
     def update_mobs(self):
