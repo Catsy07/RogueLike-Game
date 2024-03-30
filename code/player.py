@@ -109,11 +109,13 @@ class Joueur(Entité):
         else:
             plein = self.health/2
             moitié = 0
-        if self.max_health - self.health >= 2:
-            if self.max_health - self.health % 2 != 0:
-                vide = ((self.max_health - self.health-1)/2) 
-            elif self.max_health - self.health % 2 == 0:
+        if self.max_health - self.health >= 2: 
+            if (self.max_health - self.health) % 2 == 0:
+                print('2')
                 vide = ((self.max_health - self.health)/2)
+            elif (self.max_health - self.health) % 2 != 0:
+                print('1')
+                vide = ((self.max_health - self.health-1)/2)
         for i in range(int(plein)):
             surface.blit(img_plein,(x,50,30,28))
             x += 45
