@@ -17,28 +17,45 @@ class Game:
 
         # Ici, on définis la taille de la fenetre puis on l'injecte sur l'écran.
         self.screen_width = 1520
-        self.screen_height = 800
+        self.screen_height = 1024
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("Soul Knight")
-
-        # On crée un instance de la classe Joueur
-        self.joueur = Joueur()
-        self.map_manager = MapManager(self.screen, self.joueur)
 
         #liste des mobs
         self.mobs = []
         
         self.img_mouse = pygame.image.load("graphiques/menu/mouse.png")
-
-        potion = Item('potion', 1, 'heal', 2, self.joueur)
-        self.joueur.inventory.append(potion)
-    def attaque(self):
+        
+    
+    
+    def show_inventory(self):
+        pygame.draw.rect(self.screen, "gray", pygame.Rect(660,850, 80*3, 80))
+        for i in range(3):
+            pygame.draw.rect(self.screen, "#545454", pygame.Rect(660+(80*i),850, 80, 80), 3)
+            texte = get_font(10).render(str(i+1), True, "#545454")
+            rect = texte.get_rect()
+            rect[0], rect[1] = 670+(80*i), 860
+            self.screen.blit(texte, rect)
+        j = 0
+        for i in self.joueur.inventory:   
+            if i != '':
+                self.screen.blit(i.gim, pygame.Rect(690+(80*j),880, i.rect[2], i.rect[3]))
+            j+=1
+        pygame.draw.rect(self.screen, "#ec8c90", pygame.Rect(657+(80*self.joueur.current_slot),847, 86, 86), 3)
+    
+    def update_joueur(self):
+        if self.joueur.health <= 0:
+            self.game_over()
         self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
         self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
         self.joueur.weapon = Weapon(self.joueur_vect, 'grande_epee', self.screen, self.map_manager.groupe()._spritelist, self.joueur)
+        self.joueur.weapon.update()
         self.joueur.use_item()
-        print(self.joueur.inventory)
+        self.joueur.show_life(self.screen)
+        self.joueur.update_inventory()
+        self.show_inventory()
     
+
 
     def update_mobs(self):
         mobs = self.map_manager.mobs()
@@ -52,20 +69,21 @@ class Game:
             i.attaque()
             i.show_life(self.screen, self.map_manager.map_layer().translate_point(i.position), i.health)
 
-    def check_stop(self):
-        if self.joueur.health <= 0:
-            self.game_over()
-            
-    
-
+    def update_items(self):
+        for i in self.non_picked_items:
+            pos = self.map_manager.map_layer().translate_point(i.position)
+            self.screen.blit(i.image, (pos[0], pos[1], 20,22))
+            if i.rect.colliderect(self.joueur.rect):
+                if self.joueur.non_filled_slots != []:
+                    slot_to_fill = self.joueur.non_filled_slots[0]
+                    self.joueur.inventory[slot_to_fill] = i
+                    self.non_picked_items.remove(i)
     def update(self):
         #cette fonction vérifie les parametres du jeu pour gerer les collisions, les interactions, etc...
         self.joueur.presse()
         self.map_manager.update()
-        self.attaque()
         
     def main_menu(self):
-        menu = True
         while True:
             self.screen.blit(BG, (0, 0))
 
@@ -89,11 +107,10 @@ class Game:
             
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    menu = False
                     pygame.quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                        self.go()
+                        self.interface_c_persos()
                     if INFORMATIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
                         self.informations()
                     if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
@@ -103,30 +120,194 @@ class Game:
 
             pygame.display.update()
     
-    def go(self):
+    
+    def interface_c_persos(self):
+        
+        while True:
+            self.screen.blit(BG, (0, 0))
 
-        clock  = pygame.time.Clock()
+            CHOIX_MOUSE_POS = pygame.mouse.get_pos()
+            
+            CHOIX_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
+            CHOIX_RECT = CHOIX_TEXT.get_rect(center=(self.screen_width/2, 150))
+            
+            chevalier_img = pygame.image.load("graphiques/menu/chevalier_menu.png")
+            magicien_img = pygame.image.load("graphiques/menu/magicien_menu.png")
+            tank_img = pygame.image.load("graphiques/menu/tank_menu.png")
+        
+            CHEVALIER_BUTTON = Button(image=pygame.image.load("graphiques/menu/Informations Rect.png"), pos=(self.screen_width/2 - 500, 650), 
+                                text_input="Chevalier", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
+        
+            MAGICIEN_BUTTON = Button(image=pygame.image.load("graphiques/menu/Informations Rect.png"), pos=(self.screen_width/2, 650), 
+                                    text_input="Magicien", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
+            
+            TANK_BUTTON = Button(image=pygame.image.load("graphiques/menu/Informations Rect.png"), pos=(self.screen_width/2 + 500, 650), 
+                                    text_input="Tank", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
+            
+            RETURN_BUTTON = Button(image=None, pos=(100, 150), 
+                                    text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
+            
+            self.screen.blit(CHOIX_TEXT, CHOIX_RECT)
+            self.screen.blit(pygame.transform.scale(chevalier_img, (150,200)), (self.screen_width/2 - 575, 300))
+            self.screen.blit(pygame.transform.scale(magicien_img, (140, 190)), (self.screen_width/2 - 75, 300))
+            self.screen.blit(pygame.transform.scale(tank_img, (140, 210)), (self.screen_width/2 + 425, 300))
 
-        jeu = True
-        while jeu:
-            #cette boucle va répéter toutes les fonctions qui font marcher le jeu jusqu'a ce qu'on appuie sur la croix
-            self.check_stop()
-            self.joueur.save_location()
-            self.update()
-            self.map_manager.draw()
-            self.joueur.weapon.update()
-            self.update_mobs()
-            self.joueur.show_life(self.screen)
-            pygame.display.flip()
-
-            #vérification de l'appui sur la croix
+            for button in [CHEVALIER_BUTTON, MAGICIEN_BUTTON,TANK_BUTTON, RETURN_BUTTON]:
+                button.changeColor(CHOIX_MOUSE_POS)
+                button.update(self.screen)
+                
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    jeu = False
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if CHEVALIER_BUTTON.checkForInput(CHOIX_MOUSE_POS):
+                        self.infos_chevalier()
+                    if MAGICIEN_BUTTON.checkForInput(CHOIX_MOUSE_POS):
+                        self.infos_magicien()
+                    if TANK_BUTTON.checkForInput(CHOIX_MOUSE_POS):
+                        self.infos_tank()
+                    if RETURN_BUTTON.checkForInput(CHOIX_MOUSE_POS):
+                        self.main_menu()
+                    
 
-            clock.tick(120)
-        pygame.quit()
+                pygame.display.update()
 
+    def infos_chevalier(self):
+        
+        while True:
+            self.screen.blit(BG, (0, 0))
+
+            CHEVALIER_MOUSE_POS = pygame.mouse.get_pos()
+            
+            CHEVALIER_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
+            CHEVALIER_RECT = CHEVALIER_TEXT.get_rect(center=(self.screen_width/2, 150))
+            
+        
+            PLAY_BUTTON = Button(image=None, pos=(self.screen_width/2, 500),
+                          text_input="PLAY", font=get_font(100), base_color="White", hovering_color="Gray")
+            
+            RETURN_BUTTON = Button(image=None, pos=(100, 150), 
+                                    text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
+            
+            self.screen.blit(CHEVALIER_TEXT, CHEVALIER_RECT)
+
+            for button in [PLAY_BUTTON, RETURN_BUTTON]:
+                button.changeColor(CHEVALIER_MOUSE_POS)
+                button.update(self.screen)
+                
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    
+                    if PLAY_BUTTON.checkForInput(CHEVALIER_MOUSE_POS):
+                        
+                        self.joueur = Joueur("Chevalier Rose", 1, 8, 1)
+                        
+                        self.map_manager = MapManager(self.screen, self.joueur)
+                        
+                        self.non_picked_items = self.map_manager.items()
+                        
+                        self.go()
+                        
+                    if RETURN_BUTTON.checkForInput(CHEVALIER_MOUSE_POS):
+                        
+                        self.interface_c_persos()
+                        
+                        
+                pygame.display.update()
+        
+        
+    def infos_magicien(self):
+        
+        while True:
+            self.screen.blit(BG, (0, 0))
+
+            MAGICIEN_MOUSE_POS = pygame.mouse.get_pos()
+            
+            MAGICIEN_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
+            MAGICIEN_RECT = MAGICIEN_TEXT.get_rect(center=(self.screen_width/2, 150))
+            
+        
+            PLAY_BUTTON = Button(image=None, pos=(self.screen_width/2, 500),
+                          text_input="PLAY", font=get_font(100), base_color="White", hovering_color="Gray")
+            
+            RETURN_BUTTON = Button(image=None, pos=(100, 150), 
+                                    text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
+            
+            self.screen.blit(MAGICIEN_TEXT, MAGICIEN_RECT)
+
+            for button in [PLAY_BUTTON, RETURN_BUTTON]:
+                button.changeColor(MAGICIEN_MOUSE_POS)
+                button.update(self.screen)
+                
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    
+                    if PLAY_BUTTON.checkForInput(MAGICIEN_MOUSE_POS):
+                        
+                        self.joueur = Joueur("magicien", 1.5, 6, 1.5)
+                        
+                        self.map_manager = MapManager(self.screen, self.joueur)
+                        self.non_picked_items = self.map_manager.items()
+                        
+                        self.go()
+                        
+                    if RETURN_BUTTON.checkForInput(MAGICIEN_MOUSE_POS):
+                        
+                        self.interface_c_persos()
+                        
+                        
+                pygame.display.update()
+    
+    
+    def infos_tank(self):
+        
+        while True:
+            self.screen.blit(BG, (0, 0))
+
+            TANK_MOUSE_POS = pygame.mouse.get_pos()
+            
+            TANK_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
+            TANK_RECT = TANK_TEXT.get_rect(center=(self.screen_width/2, 150))
+            
+        
+            PLAY_BUTTON = Button(image=None, pos=(self.screen_width/2, 500),
+                          text_input="PLAY", font=get_font(100), base_color="White", hovering_color="Gray")
+            
+            RETURN_BUTTON = Button(image=None, pos=(100, 150), 
+                                    text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
+            
+            self.screen.blit(TANK_TEXT, TANK_RECT)
+
+            for button in [PLAY_BUTTON, RETURN_BUTTON]:
+                button.changeColor(TANK_MOUSE_POS)
+                button.update(self.screen)
+                
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    
+                    if PLAY_BUTTON.checkForInput(TANK_MOUSE_POS):
+                        
+                        self.joueur = Joueur("tank", 0.75, 12, 0.75)
+                        
+                        self.map_manager = MapManager(self.screen, self.joueur)
+
+                        self.non_picked_items = self.map_manager.items()                        
+                        self.go()
+                        
+                    if RETURN_BUTTON.checkForInput(TANK_MOUSE_POS):
+                        
+                        self.interface_c_persos()
+                        
+                        
+                pygame.display.update()
+    
+    
     def informations(self):
         infos = True
         while True:
@@ -167,31 +348,7 @@ class Game:
 
                 pygame.display.update()
     
-    def game_over(self):
-        while True:
-            PLAY_MOUSE_POS = pygame.mouse.get_pos()
-
-            self.screen.fill("black")
-
-            PLAY_TEXT = get_font(75).render("YOU LOST...", True, "White")
-            PLAY_RECT = PLAY_TEXT.get_rect(center=(self.screen_width/2, 260))
-            self.screen.blit(PLAY_TEXT, PLAY_RECT)
-
-            PLAY_BACK = Button(image=None, pos=(self.screen_width/2, 660), 
-                                text_input="Menu", font=get_font(45), base_color="White", hovering_color="Gray")
-
-            PLAY_BACK.changeColor(PLAY_MOUSE_POS)
-            PLAY_BACK.update(self.screen)
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
-                        self.main_menu()
-
-            pygame.display.update()
-            
+    
     def keys_infos(self):
 
         while True:
@@ -261,6 +418,96 @@ class Game:
                 pygame.display.update()
     
     def attack_infos(self):
+        while True:
+            self.screen.blit(BG, (0, 0))
+
+            ATTACK_MOUSE_POS = pygame.mouse.get_pos()
+            
+            ATTACK_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
+            ATTACK_RECT = ATTACK_TEXT.get_rect(center=(self.screen_width/2, 150))
+            
+        
+            MOUSE_BUTTON = Button(image=pygame.transform.scale(self.img_mouse, (110,210)), pos=(self.screen_width/2, 500),
+                          text_input="", font=get_font(100), base_color="White", hovering_color="Gray")
+            
+            RETURN_BUTTON = Button(image=None, pos=(100, 150), 
+                                    text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
+            
+            self.screen.blit(ATTACK_TEXT, ATTACK_RECT)
+
+            for button in [MOUSE_BUTTON, RETURN_BUTTON]:
+                button.changeColor(ATTACK_MOUSE_POS)
+                button.update(self.screen)
+                
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    
+                    if MOUSE_BUTTON.checkForInput(ATTACK_MOUSE_POS):
+                        
+                        MOUSE_TEXT = get_font(100).render("LEFT CLICK", True, "White")
+                        MOUSE_RECT = MOUSE_TEXT.get_rect(center=(self.screen_width/2, 300))
+                        self.screen.blit(MOUSE_TEXT, MOUSE_RECT)
+                        
+                    if RETURN_BUTTON.checkForInput(ATTACK_MOUSE_POS):
+                        
+                        self.informations()
+                        
+                        
+                pygame.display.update()
+                
+    def go(self):
+
+        clock  = pygame.time.Clock()
+
+        jeu = True
+        while jeu:
+            #cette boucle va répéter toutes les fonctions qui font marcher le jeu jusqu'a ce qu'on appuie sur la croix
+            self.joueur.save_location()
+            self.update()
+            self.map_manager.draw()
+            self.update_mobs()
+            self.update_items()
+            self.update_joueur()
+            self.joueur.weapon.update()
+            pygame.display.flip()
+
+            #vérification de l'appui sur la croix
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    jeu = False
+
+            clock.tick(120)
+        pygame.quit()
+            
+    
+    def game_over(self):
+        while True:
+            PLAY_MOUSE_POS = pygame.mouse.get_pos()
+
+            self.screen.fill("black")
+
+            PLAY_TEXT = get_font(75).render("YOU LOST...", True, "White")
+            PLAY_RECT = PLAY_TEXT.get_rect(center=(self.screen_width/2, 260))
+            self.screen.blit(PLAY_TEXT, PLAY_RECT)
+
+            PLAY_BACK = Button(image=None, pos=(self.screen_width/2, 660), 
+                                text_input="Menu", font=get_font(45), base_color="White", hovering_color="Gray")
+
+            PLAY_BACK.changeColor(PLAY_MOUSE_POS)
+            PLAY_BACK.update(self.screen)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
+                        self.main_menu()
+
+            pygame.display.update()
+            
+        
         while True:
             self.screen.blit(BG, (0, 0))
 

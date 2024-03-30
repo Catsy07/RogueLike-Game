@@ -11,7 +11,7 @@ class Portail:
 
 
 class Map:
-    def __init__(self, nom, murs, groupe, tmx_data, portails, map_layer, mobs):
+    def __init__(self, nom, murs, groupe, tmx_data, portails, map_layer, mobs, items):
         # Class map qui a un nom, des collisions et un groupe de calques
         self.nom = nom
         self.murs = murs
@@ -20,6 +20,7 @@ class Map:
         self.portails = portails
         self.map_layer = map_layer
         self.mobs = mobs
+        self.items = items
 
 class MapManager:
     def __init__(self, screen, joueur):
@@ -85,14 +86,21 @@ class MapManager:
 
         for obj in tmx_data.objects:
             if obj.type == 'spawn_mob':
-                mobs.append(Monstre(obj.name, obj.x, obj.y, self.joueur, 3))
+                mobs.append(Monstre(obj.name, obj.x, obj.y, self.joueur, 3, 1))
+
+        items = []
+
+        for obj in tmx_data.objects:
+                if obj.type == 'item':
+                    name, level, type = obj.name.split()
+                    items.append(Item(name, type, int(level), self.joueur, obj.x, obj.y))
+
         # On crée un groupe qui contient tous les calques de la map pour povoir tous les injecter en meme temps
         groupe = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4) 
         groupe.add(self.joueur)
         for i in mobs:
             groupe.add(i)
-
-        map = Map(nom, walls, groupe, tmx_data, portails, map_layer, mobs) # Finalement on crée la carte a partir des infos qu'on a pu récuperer
+        map = Map(nom, walls, groupe, tmx_data, portails, map_layer, mobs, items) # Finalement on crée la carte a partir des infos qu'on a pu récuperer
         self.maps[nom] = map # On range cette carte dans le dictionnaire
 
     def map_info(self):
@@ -117,7 +125,8 @@ class MapManager:
     def mobs(self):
         return self.map_info().mobs
     
-    
+    def items(self):
+        return self.map_info().items
 
     def draw(self):
         #on dessine la carte

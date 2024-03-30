@@ -5,11 +5,12 @@ from pyscroll.orthographic import BufferedRenderer
 
 from animation import SpriteAnimé
 
-
+def get_font(size): # Returns Press-Start-2P in the desired size
+    return pygame.font.Font("graphiques/menu/font.ttf", size)
 last_attack_time = 0
 attack_cooldown = 500
 class Entité(SpriteAnimé):
-    def __init__(self, nom, x, y, vitesse, health):
+    def __init__(self, nom, x, y, vitesse, health, damage):
         # On crée la classe "Joueur" qui hérite de la super-classe "Sprite" de Pygame.
         super().__init__(nom)#Image du sprite
         self.image = self.get_image(0,0) # on injecte l'image
@@ -22,7 +23,7 @@ class Entité(SpriteAnimé):
         self.feet = pygame.Rect(0,0, self.rect.width * 0.5, 1) # On place les pieds du joueur qui vont etre les facteurs de collisions pour plus de réalisme
         self.old_pos = self.position.copy() # On enregistre la position du joueur pour l'y faire revenir en cas de collision
         self.health = health 
-        
+        self.damage = damage
 
     def save_location(self): 
         # On enregistre la position du joueur pour l'y faire revenir en cas de collision
@@ -56,15 +57,15 @@ class Entité(SpriteAnimé):
         return image
 plus = 40    
 class Joueur(Entité):
-    def __init__(self):
-        super().__init__("Chevalier Rose", 0, 0, 1, 3)
-    
-        self.health = 6
-        self.coucou = "coucou"
+    def __init__(self, choix_joueur, vitesse, health, damage):
+        super().__init__(f'{choix_joueur}', 0,0, vitesse, health, damage)
+        self.max_health = health
+        self.health = self.max_health
         self.xbool = False
 
-        self.inventory = []
-
+        self.inventory = ['','','']
+        self.filled_slots = 0
+        self.current_slot = 0
     def presse(self):
     #Cette fonction va servir a récupérer les touches pressées par le joueur sur le clavier ou la souris
         presse = pygame.key.get_pressed()
@@ -86,42 +87,80 @@ class Joueur(Entité):
             self.change_animation('run',self.xbool)
         else: 
             self.change_animation('idle',self.xbool)
+
+        #pour changer de slot d'inventaire
+        if presse[pygame.K_1]:
+            self.current_slot = 0
+        elif presse[pygame.K_2]:
+            self.current_slot = 1
+        elif presse[pygame.K_3]:
+            self.current_slot = 2
         
 
     def show_life(self, surface):
         img_plein = pygame.transform.scale(pygame.image.load('graphiques/autres/plein.png'), (45,42))
         img_moitie = pygame.transform.scale(pygame.image.load('graphiques/autres/moitie.png'), (45,42))
+        img_vide = pygame.transform.scale(pygame.image.load('graphiques/autres/vide.png'), (44,41))
+        vide = 0
+        x = 50
         if self.health % 2 != 0:
             plein = (self.health - 1) / 2
             moitié = 1
         else:
             plein = self.health/2
             moitié = 0
-        x = 100
+        if self.max_health - self.health >= 2:
+            if self.max_health - self.health % 2 != 0:
+                vide = ((self.max_health - self.health-1)/2) 
+            elif self.max_health - self.health % 2 == 0:
+                vide = ((self.max_health - self.health)/2)
         for i in range(int(plein)):
             surface.blit(img_plein,(x,50,30,28))
             x += 45
         if moitié == 1:
             surface.blit(img_moitie,(x,50,30,28))
-    
-     
+            x += 45
+        for i in range(int(vide)):
+            surface.blit(img_vide,(x,50,30,28))
+            x += 45
+
+        
+
+    def update_inventory(self):
+        self.non_filled_slots = []
+        index = 0
+        for i in self.inventory:
+            if i == '':
+                self.non_filled_slots.append(index)
+            index+=1
+        
+
     def use_item(self):
         left, middle, right = pygame.mouse.get_pressed()
-        for i in self.inventory:
+        if self.inventory != []:
+            item = self.inventory[self.current_slot]
             if right:
-                if i.type == 'heal':
-                    self.health += i.level
-                    self.inventory.remove(i)
+                if item != '':
+                    if item.type == 'heal':
+                        if self.health != self.max_health:
+                            if self.health + item.level > self.max_health:
+                                self.health = self.max_health
+                                self.inventory[self.current_slot] = ''
+                            else:
+                                self.health += item.level
+                                self.inventory[self.current_slot] = ''
+                    
                     
 
 
 class Monstre(Entité):
-    def __init__(self, nom, x, y, joueur, health):
-        super().__init__(nom, x, y, 0.30, health)
+    def __init__(self, nom, x, y, joueur, health, damage):
+        super().__init__(nom, x, y, 0.30, health, damage)
 
         self.joueur = joueur
         self.last_attack_time = 0
         self.attack_cooldown = 700
+        self.damage = damage
     def move(self):
         presse = pygame.key.get_pressed()
         if abs(self.joueur.position[0] - self.position[0]) > 100 or abs(self.joueur.position[1] - self.position[1]) > 100:
@@ -150,7 +189,7 @@ class Monstre(Entité):
         current_time = pygame.time.get_ticks()
         if self.rect.colliderect(self.joueur.rect):
             if current_time - self.last_attack_time > self.attack_cooldown:
-                self.joueur.health -= 1
+                self.joueur.health -= self.damage
                 self.last_attack_time = current_time
 
             
@@ -230,7 +269,7 @@ class Weapon:
             for i in self.monstres:
                 if rect.colliderect(i.rect) and isinstance(i, Monstre):
                     
-                    i.health -= 1
+                    i.health -= self.joueur.damage
                     if i.health <= 0:
                         self.monstres.remove(i)
                         del(i)
@@ -241,10 +280,6 @@ class Weapon:
         self.surface.blit(image, rect)
         # Vérifier si le bouton gauche de la souris est enfoncé et si le cooldown est terminé
         
-
-        
-        
-        
     def update(self):
         self.position = [self.joueur.position[0], self.joueur.position[1]]
         self.rect.center = self.position
@@ -252,10 +287,23 @@ class Weapon:
         
 
 class Item:
-    def __init__(self, name, quantity, type, level, joueur):
+    def __init__(self, name, type, level, joueur, x, y):
         self.name = name
-        self.quantity = quantity
+        self.quantity = 0
         self.type = type
         self.level = level
         self.joueur = joueur
-        self.image = pygame.image.load(f'graphiques/Items/{name}.png')
+        self.position = (x,y)
+        self.image = pygame.transform.scale((pygame.image.load(f'graphiques/Items/{name}.png')), (20,22))
+        self.gim = self.get_image(0,0)
+        self.rect = self.gim.get_rect()
+        self.rect[0], self.rect[1] = self.position[0], self.position[1]
+        
+        
+
+    def get_image(self, x, y):
+        # Fonction pour injecter l'image a des coordonnées données
+        img = pygame.Surface([self.image.get_width(), self.image.get_height()])
+        img.blit(self.image,(0,0),(x,y,self.image.get_width(),self.image.get_height()))
+        img.set_colorkey([0,0,0])
+        return img
