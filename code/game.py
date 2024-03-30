@@ -161,18 +161,18 @@ class Game:
                     pygame.quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if CHEVALIER_BUTTON.checkForInput(CHOIX_MOUSE_POS):
-                        self.infos_chevalier()
+                        self.info_perso('Chevalier Rose', 1, 6, 1, 'Epee2')
                     if MAGICIEN_BUTTON.checkForInput(CHOIX_MOUSE_POS):
-                        self.infos_magicien()
+                        self.info_perso('magicien', 1.5, 4, 1.2, 'mage_stick')
                     if TANK_BUTTON.checkForInput(CHOIX_MOUSE_POS):
-                        self.infos_tank()
+                        self.info_perso('tank', 0.75, 10, 0.75, 'grande_epee')
                     if RETURN_BUTTON.checkForInput(CHOIX_MOUSE_POS):
                         self.main_menu()
                     
 
                 pygame.display.update()
 
-    def infos_chevalier(self):
+    def info_perso(self, name, speed, health, attack, weapon):
         
         while True:
             self.screen.blit(BG, (0, 0))
@@ -202,12 +202,12 @@ class Game:
                     
                     if PLAY_BUTTON.checkForInput(CHEVALIER_MOUSE_POS):
                         
-                        self.joueur = Joueur("Chevalier Rose", 1, 8, 1)
+                        self.joueur = Joueur(name, speed, health, attack)
                         
                         self.map_manager = MapManager(self.screen, self.joueur)
                     
 
-                        self.weapon = 'Epee2'
+                        self.weapon = weapon
                         
                         self.go()
                         
@@ -219,96 +219,6 @@ class Game:
                 pygame.display.update()
         
         
-    def infos_magicien(self):
-        
-        while True:
-            self.screen.blit(BG, (0, 0))
-
-            MAGICIEN_MOUSE_POS = pygame.mouse.get_pos()
-            
-            MAGICIEN_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
-            MAGICIEN_RECT = MAGICIEN_TEXT.get_rect(center=(self.screen_width/2, 150))
-            
-        
-            PLAY_BUTTON = Button(image=None, pos=(self.screen_width/2, 500),
-                          text_input="PLAY", font=get_font(100), base_color="White", hovering_color="Gray")
-            
-            RETURN_BUTTON = Button(image=None, pos=(100, 150), 
-                                    text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
-            
-            self.screen.blit(MAGICIEN_TEXT, MAGICIEN_RECT)
-
-            for button in [PLAY_BUTTON, RETURN_BUTTON]:
-                button.changeColor(MAGICIEN_MOUSE_POS)
-                button.update(self.screen)
-                
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    
-                    if PLAY_BUTTON.checkForInput(MAGICIEN_MOUSE_POS):
-                        
-                        self.joueur = Joueur("magicien", 1.2, 4, 1.5)
-                        
-                        self.map_manager = MapManager(self.screen, self.joueur)
-                        self.weapon = 'mage_stick'
-                        
-                        self.go()
-                        
-                    if RETURN_BUTTON.checkForInput(MAGICIEN_MOUSE_POS):
-                        
-                        self.interface_c_persos()
-                        
-                        
-                pygame.display.update()
-    
-    
-    def infos_tank(self):
-        
-        while True:
-            self.screen.blit(BG, (0, 0))
-
-            TANK_MOUSE_POS = pygame.mouse.get_pos()
-            
-            TANK_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
-            TANK_RECT = TANK_TEXT.get_rect(center=(self.screen_width/2, 150))
-            
-        
-            PLAY_BUTTON = Button(image=None, pos=(self.screen_width/2, 500),
-                          text_input="PLAY", font=get_font(100), base_color="White", hovering_color="Gray")
-            
-            RETURN_BUTTON = Button(image=None, pos=(100, 150), 
-                                    text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
-            
-            self.screen.blit(TANK_TEXT, TANK_RECT)
-
-            for button in [PLAY_BUTTON, RETURN_BUTTON]:
-                button.changeColor(TANK_MOUSE_POS)
-                button.update(self.screen)
-                
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    
-                    if PLAY_BUTTON.checkForInput(TANK_MOUSE_POS):
-                        
-                        self.joueur = Joueur("tank", 0.75, 12, 0.75)
-                        
-                        self.map_manager = MapManager(self.screen, self.joueur) 
-
-                        self.weapon = 'grande_epee'
-
-                        self.go()
-                        
-                    if RETURN_BUTTON.checkForInput(TANK_MOUSE_POS):
-                        
-                        self.interface_c_persos()
-                        
-                        
-                pygame.display.update()
-    
     
     def informations(self):
         infos = True
@@ -509,45 +419,6 @@ class Game:
 
             pygame.display.update()
             
-        
-        while True:
-            self.screen.blit(BG, (0, 0))
-
-            ATTACK_MOUSE_POS = pygame.mouse.get_pos()
-            
-            ATTACK_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
-            ATTACK_RECT = ATTACK_TEXT.get_rect(center=(self.screen_width/2, 150))
-            
-        
-            MOUSE_BUTTON = Button(image=pygame.transform.scale(self.img_mouse, (100,100)), pos=(self.screen_width/2, 500),
-                          text_input="", font=get_font(100), base_color="White", hovering_color="Gray")
-            
-            RETURN_BUTTON = Button(image=None, pos=(100, 150), 
-                                    text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
-            
-            self.screen.blit(ATTACK_TEXT, ATTACK_RECT)
-
-            for button in [MOUSE_BUTTON, RETURN_BUTTON]:
-                button.changeColor(ATTACK_MOUSE_POS)
-                button.update(self.screen)
-                
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    
-                    if MOUSE_BUTTON.checkForInput(ATTACK_MOUSE_POS):
-                        
-                        MOUSE_TEXT = get_font(100).render("LEFT CLICK", True, "White")
-                        MOUSE_RECT = MOUSE_TEXT.get_rect(center=(self.screen_width/2, 300))
-                        self.screen.blit(MOUSE_TEXT, MOUSE_RECT)
-                        
-                    if RETURN_BUTTON.checkForInput(ATTACK_MOUSE_POS):
-                        
-                        self.informations()
-                        
-                        
-                pygame.display.update()
 class Button():
 	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
 		self.image = image
