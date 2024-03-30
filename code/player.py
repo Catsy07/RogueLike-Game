@@ -100,7 +100,7 @@ class Joueur(Entité):
     def show_life(self, surface):
         img_plein = pygame.transform.scale(pygame.image.load('graphiques/autres/plein.png'), (45,42))
         img_moitie = pygame.transform.scale(pygame.image.load('graphiques/autres/moitie.png'), (45,42))
-        img_vide = pygame.transform.scale(pygame.image.load('graphiques/autres/vide.png'), (44,41))
+        img_vide = pygame.transform.scale(pygame.image.load('graphiques/autres/vide.png'), (45,42))
         vide = 0
         x = 50
         if self.health % 2 != 0:
@@ -116,13 +116,13 @@ class Joueur(Entité):
                 vide = ((self.max_health - self.health-1)/2)
         for i in range(int(plein)):
             surface.blit(img_plein,(x,50,30,28))
-            x += 45
+            x += 50
         if moitié == 1:
             surface.blit(img_moitie,(x,50,30,28))
-            x += 45
+            x += 50
         for i in range(int(vide)):
             surface.blit(img_vide,(x,50,30,28))
-            x += 45
+            x += 50
 
         
 

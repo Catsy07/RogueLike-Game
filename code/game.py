@@ -41,7 +41,7 @@ class Game:
             if i != '':
                 self.screen.blit(i.gim, pygame.Rect(690+(80*j),880, i.rect[2], i.rect[3]))
             j+=1
-        pygame.draw.rect(self.screen, "#ec8c90", pygame.Rect(657+(80*self.joueur.current_slot),847, 86, 86), 3)
+        pygame.draw.rect(self.screen, "#ffffff", pygame.Rect(657+(80*self.joueur.current_slot),847, 86, 86), 3)
     
     def update_joueur(self):
         if self.joueur.health <= 0:
@@ -92,11 +92,11 @@ class Game:
             MENU_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
             MENU_RECT = MENU_TEXT.get_rect(center=(self.screen_width/2, 150))
 
-            PLAY_BUTTON = Button(image=pygame.image.load("graphiques/menu/Play Rect.png"), pos=(self.screen_width/2, 350), 
+            PLAY_BUTTON = Button(image=None, pos=(self.screen_width/2, 350), 
                                 text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-            INFORMATIONS_BUTTON = Button(image=pygame.image.load("graphiques/menu/Informations Rect.png"), pos=(self.screen_width/2, 500), 
+            INFORMATIONS_BUTTON = Button(image=None, pos=(self.screen_width/2, 500), 
                                 text_input="INFOS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-            QUIT_BUTTON = Button(image=pygame.image.load("graphiques/menu/Quit Rect.png"), pos=(self.screen_width/2, 650), 
+            QUIT_BUTTON = Button(image=None, pos=(self.screen_width/2, 650), 
                                 text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
             self.screen.blit(MENU_TEXT, MENU_RECT)
@@ -135,22 +135,22 @@ class Game:
             magicien_img = pygame.image.load("graphiques/menu/magicien_menu.png")
             tank_img = pygame.image.load("graphiques/menu/tank_menu.png")
         
-            CHEVALIER_BUTTON = Button(image=pygame.image.load("graphiques/menu/Informations Rect.png"), pos=(self.screen_width/2 - 500, 650), 
+            CHEVALIER_BUTTON = Button(image=None, pos=(self.screen_width/2 - 500, 650), 
                                 text_input="Chevalier", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
         
-            MAGICIEN_BUTTON = Button(image=pygame.image.load("graphiques/menu/Informations Rect.png"), pos=(self.screen_width/2, 650), 
+            MAGICIEN_BUTTON = Button(image=None, pos=(self.screen_width/2, 650), 
                                     text_input="Magicien", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
             
-            TANK_BUTTON = Button(image=pygame.image.load("graphiques/menu/Informations Rect.png"), pos=(self.screen_width/2 + 500, 650), 
+            TANK_BUTTON = Button(image=None, pos=(self.screen_width/2 + 500, 650), 
                                     text_input="Tank", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
             
             RETURN_BUTTON = Button(image=None, pos=(100, 150), 
                                     text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
             
             self.screen.blit(CHOIX_TEXT, CHOIX_RECT)
-            self.screen.blit(pygame.transform.scale(chevalier_img, (150,200)), (self.screen_width/2 - 575, 300))
-            self.screen.blit(pygame.transform.scale(magicien_img, (140, 190)), (self.screen_width/2 - 75, 300))
-            self.screen.blit(pygame.transform.scale(tank_img, (140, 210)), (self.screen_width/2 + 425, 300))
+            self.screen.blit(pygame.transform.scale(chevalier_img, (chevalier_img.get_width() * 10, chevalier_img.get_height() * 10)), (self.screen_width/2 - 575, 350))
+            self.screen.blit(pygame.transform.scale(magicien_img, (magicien_img.get_width() * 10, magicien_img.get_height() * 10)), (self.screen_width/2 - 75, 350))
+            self.screen.blit(pygame.transform.scale(tank_img, (tank_img.get_width() * 10, tank_img.get_height() * 10)), (self.screen_width/2 + 425, 350))
 
             for button in [CHEVALIER_BUTTON, MAGICIEN_BUTTON,TANK_BUTTON, RETURN_BUTTON]:
                 button.changeColor(CHOIX_MOUSE_POS)
@@ -161,11 +161,11 @@ class Game:
                     pygame.quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if CHEVALIER_BUTTON.checkForInput(CHOIX_MOUSE_POS):
-                        self.info_perso('Chevalier Rose', 1, 6, 1, 'Epee2')
+                        self.info_perso('chevalier', 1, 6, 1, 'chevalier_sword')
                     if MAGICIEN_BUTTON.checkForInput(CHOIX_MOUSE_POS):
-                        self.info_perso('magicien', 1.5, 4, 1.2, 'mage_stick')
+                        self.info_perso('magicien', 1.5, 4, 1.5, 'mage_stick')
                     if TANK_BUTTON.checkForInput(CHOIX_MOUSE_POS):
-                        self.info_perso('tank', 0.75, 10, 0.75, 'grande_epee')
+                        self.info_perso('tank', 0.75, 10, 0.75, 'tank_hammer')
                     if RETURN_BUTTON.checkForInput(CHOIX_MOUSE_POS):
                         self.main_menu()
                     
@@ -177,22 +177,44 @@ class Game:
         while True:
             self.screen.blit(BG, (0, 0))
 
-            CHEVALIER_MOUSE_POS = pygame.mouse.get_pos()
+            MENU_MOUSE_POS = pygame.mouse.get_pos()
             
-            CHEVALIER_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
-            CHEVALIER_RECT = CHEVALIER_TEXT.get_rect(center=(self.screen_width/2, 150))
+            MENU_TEXT = get_font(100).render("The Dungeon", True, "#b68f40")
+            MENU_RECT = MENU_TEXT.get_rect(center=(self.screen_width/2, 150))
+            
+            PERSO_IMG_MENU = pygame.image.load(f'graphiques/menu/{name}_menu.png')
+            PERSO_HEALTH = get_font(50).render(f"{health}", True, "#ffffff")
+            PERSO_HEALTH_IMG = pygame.image.load('graphiques/autres/plein.png')
+            PERSO_SPEED = get_font(50).render(f"{speed}", True, "#ffffff")
+            PERSO_SPEED_IMG = pygame.image.load('graphiques/autres/shoe.png')
+            PERSO_ATTACK = get_font(50).render(f"{attack}", True, "#ffffff")
+            PERSO_ATTACK_IMG = pygame.image.load('graphiques/autres/sword.png')
             
         
-            PLAY_BUTTON = Button(image=None, pos=(self.screen_width/2, 500),
-                          text_input="PLAY", font=get_font(100), base_color="White", hovering_color="Gray")
+            PLAY_BUTTON = Button(image=None, pos=(self.screen_width/2, 700),
+                          text_input="PLAY", font=get_font(50), base_color="White", hovering_color="Gray")
             
             RETURN_BUTTON = Button(image=None, pos=(100, 150), 
                                     text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
             
-            self.screen.blit(CHEVALIER_TEXT, CHEVALIER_RECT)
+            self.screen.blit(MENU_TEXT, MENU_RECT)
+            self.screen.blit(pygame.transform.scale(PERSO_IMG_MENU, (PERSO_IMG_MENU.get_width() * 10, PERSO_IMG_MENU.get_height() * 10)), (self.screen_width/2 - 75, 400))
+            
+            
+            self.screen.blit(PERSO_HEALTH, (self.screen_width/2 - 450, 415))
+            self.screen.blit(pygame.transform.scale(PERSO_HEALTH_IMG, (PERSO_HEALTH_IMG.get_width() * 5, PERSO_HEALTH_IMG.get_height() * 5)), (self.screen_width/2 - 550, 400))
+            
+            
+            self.screen.blit(PERSO_SPEED, (self.screen_width/2 - 450, 525))
+            self.screen.blit(pygame.transform.scale(PERSO_SPEED_IMG, (PERSO_SPEED_IMG.get_width() * 5, PERSO_SPEED_IMG.get_height() * 5)), (self.screen_width/2 - 570, 500),)
+            
+            
+            self.screen.blit(PERSO_ATTACK, (self.screen_width/2 - 450, 615))
+            self.screen.blit(pygame.transform.scale(PERSO_ATTACK_IMG, (PERSO_HEALTH_IMG.get_width() * 5, PERSO_HEALTH_IMG.get_height() * 5)), (self.screen_width/2 - 550, 600),)
+            
 
             for button in [PLAY_BUTTON, RETURN_BUTTON]:
-                button.changeColor(CHEVALIER_MOUSE_POS)
+                button.changeColor(MENU_MOUSE_POS)
                 button.update(self.screen)
                 
             for event in pygame.event.get():
@@ -200,7 +222,7 @@ class Game:
                     pygame.quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     
-                    if PLAY_BUTTON.checkForInput(CHEVALIER_MOUSE_POS):
+                    if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                         
                         self.joueur = Joueur(name, speed, health, attack)
                         
@@ -211,7 +233,7 @@ class Game:
                         
                         self.go()
                         
-                    if RETURN_BUTTON.checkForInput(CHEVALIER_MOUSE_POS):
+                    if RETURN_BUTTON.checkForInput(MENU_MOUSE_POS):
                         
                         self.interface_c_persos()
                         
