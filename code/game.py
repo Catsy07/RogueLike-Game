@@ -48,7 +48,7 @@ class Game:
             self.game_over()
         self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
         self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
-        self.joueur.weapon = Weapon(self.joueur_vect, 'grande_epee', self.screen, self.map_manager.groupe()._spritelist, self.joueur)
+        self.joueur.weapon = Weapon(self.joueur_vect, self.weapon, self.screen, self.map_manager.groupe()._spritelist, self.joueur)
         self.joueur.weapon.update()
         self.joueur.use_item()
         self.joueur.show_life(self.screen)
@@ -70,14 +70,14 @@ class Game:
             i.show_life(self.screen, self.map_manager.map_layer().translate_point(i.position), i.health)
 
     def update_items(self):
-        for i in self.non_picked_items:
+        for i in self.map_manager.items():
             pos = self.map_manager.map_layer().translate_point(i.position)
             self.screen.blit(i.image, (pos[0], pos[1], 20,22))
             if i.rect.colliderect(self.joueur.rect):
                 if self.joueur.non_filled_slots != []:
                     slot_to_fill = self.joueur.non_filled_slots[0]
                     self.joueur.inventory[slot_to_fill] = i
-                    self.non_picked_items.remove(i)
+                    self.map_manager.items().remove(i)
     def update(self):
         #cette fonction vérifie les parametres du jeu pour gerer les collisions, les interactions, etc...
         self.joueur.presse()
@@ -205,8 +205,9 @@ class Game:
                         self.joueur = Joueur("Chevalier Rose", 1, 8, 1)
                         
                         self.map_manager = MapManager(self.screen, self.joueur)
-                        
-                        self.non_picked_items = self.map_manager.items()
+                    
+
+                        self.weapon = 'Epee2'
                         
                         self.go()
                         
@@ -248,10 +249,10 @@ class Game:
                     
                     if PLAY_BUTTON.checkForInput(MAGICIEN_MOUSE_POS):
                         
-                        self.joueur = Joueur("magicien", 1.5, 6, 1.5)
+                        self.joueur = Joueur("magicien", 1.2, 4, 1.5)
                         
                         self.map_manager = MapManager(self.screen, self.joueur)
-                        self.non_picked_items = self.map_manager.items()
+                        self.weapon = 'mage_stick'
                         
                         self.go()
                         
@@ -295,9 +296,10 @@ class Game:
                         
                         self.joueur = Joueur("tank", 0.75, 12, 0.75)
                         
-                        self.map_manager = MapManager(self.screen, self.joueur)
+                        self.map_manager = MapManager(self.screen, self.joueur) 
 
-                        self.non_picked_items = self.map_manager.items()                        
+                        self.weapon = 'grande_epee'
+
                         self.go()
                         
                     if RETURN_BUTTON.checkForInput(TANK_MOUSE_POS):

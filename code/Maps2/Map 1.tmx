@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" infinite="0" nextlayerid="16" nextobjectid="248">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" infinite="0" nextlayerid="16" nextobjectid="274">
  <tileset firstgid="1" name="rogue" tilewidth="16" tileheight="16" tilecount="625" columns="25">
   <image source="../Tile Map/Environment/Dungeon Prison/Assets/Tiles.png" width="400" height="400"/>
  </tileset>
@@ -445,7 +445,7 @@
   <object id="187" name="orc" type="spawn_mob" x="909.5" y="860.167">
    <point/>
   </object>
-  <object id="188" name="orc" type="spawn_mob" x="692.167" y="856.833">
+  <object id="188" name="demon" type="spawn_mob" x="692.167" y="856.833">
    <point/>
   </object>
   <object id="189" name="demon" type="spawn_mob" x="915.833" y="1052.5">
@@ -505,5 +505,14 @@
   <object id="245" type="Collisions" x="833.666" y="1092.33" width="138.5" height="3.5"/>
   <object id="246" type="Collisions" x="834.166" y="1092.33" width="6" height="151.25"/>
   <object id="247" type="Collisions" x="833.666" y="1234.83" width="57.5" height="52.5"/>
+  <object id="248" name="potion 2 heal" type="item" x="681" y="447">
+   <point/>
+  </object>
+  <object id="249" name="potion 2 heal" type="item" x="767.5" y="1337">
+   <point/>
+  </object>
+  <object id="250" name="potion 2 heal" type="item" x="284" y="592">
+   <point/>
+  </object>
  </objectgroup>
 </map>

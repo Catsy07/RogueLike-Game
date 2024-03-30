@@ -28,7 +28,7 @@ class MapManager:
         self.maps = dict() #On va stocker toutes les differentes cartes ici
         self.screen = screen
         self.joueur = joueur
-        self.current_map = 'Spawn' # Map actuelle 
+        self.current_map = 'Map 1' # Map actuelle 
         
         # On crée les cartes 
         self.nouvelle_carte("Spawn", portails=[
@@ -38,7 +38,7 @@ class MapManager:
             Portail('Map 1', "sortie_map1", 'Spawn', 'spawn_spawn')
         ])
 
-        self.teleport("spawn_spawn")
+        self.teleport("spawn_map1")
 
     def collisions(self):
         # teste la collision avec une porte pour se tp
@@ -94,6 +94,7 @@ class MapManager:
                 if obj.type == 'item':
                     name, level, type = obj.name.split()
                     items.append(Item(name, type, int(level), self.joueur, obj.x, obj.y))
+                print(items)
 
         # On crée un groupe qui contient tous les calques de la map pour povoir tous les injecter en meme temps
         groupe = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4) 
