@@ -94,7 +94,6 @@ class MapManager:
                 if obj.type == 'item':
                     name, level, type = obj.name.split()
                     items.append(Item(name, type, int(level), self.joueur, obj.x, obj.y))
-                print(items)
 
         # On crée un groupe qui contient tous les calques de la map pour povoir tous les injecter en meme temps
         groupe = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4) 
