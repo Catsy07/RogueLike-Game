@@ -25,7 +25,9 @@ class Game:
         self.mobs = []
         
         self.img_mouse = pygame.image.load("graphiques/menu/mouse.png")
-        
+        self.cursor = pygame.image.load("graphiques/autres/cursor.png")
+        self.cursor = pygame.transform.scale(self.cursor, (18,18))
+        pygame.mouse.set_visible(False)
     
     
     def show_inventory(self):
@@ -54,7 +56,8 @@ class Game:
         self.joueur.show_life(self.screen)
         self.joueur.update_inventory()
         self.show_inventory()
-    
+        pos = pygame.mouse.get_pos()
+        self.screen.blit(self.cursor, pos)  
 
 
     def update_mobs(self):
@@ -116,7 +119,9 @@ class Game:
                     if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                         jeu = False
                         pygame.quit()
-                
+            
+            pos = pygame.mouse.get_pos()
+            self.screen.blit(self.cursor, pos)    
 
             pygame.display.update()
     
@@ -155,7 +160,8 @@ class Game:
             for button in [CHEVALIER_BUTTON, MAGICIEN_BUTTON,TANK_BUTTON, RETURN_BUTTON]:
                 button.changeColor(CHOIX_MOUSE_POS)
                 button.update(self.screen)
-                
+            pos = pygame.mouse.get_pos()
+            self.screen.blit(self.cursor, pos)      
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -216,7 +222,8 @@ class Game:
             for button in [PLAY_BUTTON, RETURN_BUTTON]:
                 button.changeColor(MENU_MOUSE_POS)
                 button.update(self.screen)
-                
+            pos = pygame.mouse.get_pos()
+            self.screen.blit(self.cursor, pos)      
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -262,7 +269,8 @@ class Game:
                                     text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
             
             self.screen.blit(INFOS_TEXT, INFOS_RECT)
-
+            pos = pygame.mouse.get_pos()
+            self.screen.blit(self.cursor, pos)  
             for button in [KEYS_BUTTON, ATTACK_BUTTON, RETURN_BUTTON]:
                 button.changeColor(INFOS_MOUSE_POS)
                 button.update(self.screen)
@@ -279,7 +287,7 @@ class Game:
                     if RETURN_BUTTON.checkForInput(INFOS_MOUSE_POS):
                         self.main_menu()
                     
-
+            
                 pygame.display.update()
     
     
@@ -310,7 +318,8 @@ class Game:
                                     text_input="<-", font=get_font(40), base_color="White", hovering_color="Gray")
             
             self.screen.blit(KEYS_TEXT, KEYS_RECT)
-
+            pos = pygame.mouse.get_pos()
+            self.screen.blit(self.cursor, pos)  
             for button in [Z_BUTTON, Q_BUTTON, S_BUTTON, D_BUTTON, RETURN_BUTTON]:
                 button.changeColor(KEYS_MOUSE_POS)
                 button.update(self.screen)
@@ -372,7 +381,8 @@ class Game:
             for button in [MOUSE_BUTTON, RETURN_BUTTON]:
                 button.changeColor(ATTACK_MOUSE_POS)
                 button.update(self.screen)
-                
+            pos = pygame.mouse.get_pos()
+            self.screen.blit(self.cursor, pos)      
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -431,7 +441,8 @@ class Game:
 
             PLAY_BACK.changeColor(PLAY_MOUSE_POS)
             PLAY_BACK.update(self.screen)
-
+            pos = pygame.mouse.get_pos()
+            self.screen.blit(self.cursor, pos)  
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()

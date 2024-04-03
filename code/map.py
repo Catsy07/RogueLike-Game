@@ -1,6 +1,7 @@
 import pygame, pytmx, pyscroll
 from player import *
 from time import sleep
+import xml.etree.ElementTree as ET
 
 class Portail:
     def __init__(self, from_world, origin_point, target_world, teleport_point):
@@ -28,17 +29,20 @@ class MapManager:
         self.maps = dict() #On va stocker toutes les differentes cartes ici
         self.screen = screen
         self.joueur = joueur
-        self.current_map = 'Map 1' # Map actuelle 
+        self.current_map = 'Spawn' # Map actuelle 
+        self.maps1 = ['salle1.tmx', 'salle1.tmx', 'salle1.tmx', 'salle1.tmx', 'salle2.tmx', 'salle1.tmx', 'salle1.tmx', 'salle1.tmx', 'salle1.tmx']
+        self.niveau1 = self.assemblage_map(self.maps1, 'lvl1')
         
         # On crée les cartes 
         self.nouvelle_carte("Spawn", portails=[
-            Portail('Spawn', "sortie_spawn", 'Map 1', 'spawn_map1')
+            Portail('Spawn', "sortie_spawn", 'lvl1', 'spawn_newmap')
         ]) 
-        self.nouvelle_carte("Map 1", portails=[
-            Portail('Map 1', "sortie_map1", 'Spawn', 'spawn_spawn')
+        self.nouvelle_carte("lvl1", portails=[
+            Portail('lvl1', "sortie_newmap", 'Spawn', 'spawn_spawn')
         ])
 
-        self.teleport("spawn_map1")
+        self.teleport("spawn_spawn")
+
 
     def collisions(self):
         # teste la collision avec une porte pour se tp
@@ -66,7 +70,116 @@ class MapManager:
         self.joueur.position[1] = point.y
         self.joueur.save_location()
 
+    def assemblage_map(self, maps, nom):
 
+        sol = [[]]
+        murs = [[]]
+        obj1 = [[]]
+        obj2 = [[]]
+        objects = []
+        a = 2
+        for i in range(3):
+            nb = 1
+            layer_data3 = []
+            b = 0
+            for map in maps[i*3:i*3+3]:
+                # Charger le contenu du fichier TMX (remplacez 'your_map_file.tmx' par le chemin réel du fichier)
+                tree = ET.parse(f'code/Maps2/{map}')
+                root = tree.getroot()
+
+                # Accéder à la première couche <layer> et extraire les données <data> à l'intérieur
+                for layer in root.findall('layer'):
+                    layer_data = ''
+                    layer_data2 = []
+                    layer_data += layer.find('data').text.strip()
+                    layer_data = layer_data.split(',')
+                    # Ici, 'data' contient le contenu textuel de la balise <data>, c'est-à-dire les indices des tuiles
+                        
+                    for i in range(0, 400, 20):
+                        #crée une liste avec des listes de 20 caracteres (représentant chaque ligne de la layer)
+                        layer_data2.append(layer_data[i:(i+20)])
+                    
+                    nbsol = 1
+                    nbmurs = 1
+                    nbobj1 = 1
+                    for j in layer_data2:
+                    #insere la liste au bon endroit dans la 'liste finale'
+                        if layer.get('name') == 'Sol':
+                            sol[0].insert(nb*nbsol-1 , j)
+                            nbsol += 1
+                        elif layer.get('name') == 'Murs':
+                            murs[0].insert(nb*nbmurs-1 , j)
+                            nbmurs += 1
+                        elif layer.get('name') == 'Objets 1':
+                            obj1[0].insert(nb*nbobj1-1 , j)
+                            nbobj1 += 1
+                for objectgroup in root.findall('objectgroup'):
+                    # Itérer sur chaque <object> à l'intérieur du groupe d'objets
+                    for obj in objectgroup.findall('object'):
+                        obj.set('x', str(float(obj.get('x'))+320*b))
+                        obj.set('y', str(float(obj.get('y'))+320*(a)))
+                        objects.append(obj)
+                nb+=1
+                b += 1
+            a-=1
+        def list_to_str(list):
+            string = ''
+            for section in list:
+                for row in section:
+                    row2 = ','.join(row)
+                    string += row2
+                    string += ','
+            return string[:len(string)-1]
+
+        string_sol = list_to_str(sol)
+        string_murs = list_to_str(murs)
+        string_obj1 = list_to_str(obj1)
+        pygame.display.set_caption("Dungeon Example")
+        # Créer l'élément racine <map> avec ses attributs
+        map_elem = ET.Element("map", version="1.10", tiledversion="1.10.2",
+                            orientation="orthogonal", renderorder="right-down", width="60", height="60", tilewidth="16",
+                            tileheight="16", infinite="0", nextlayerid="2", nextobjectid="1")
+
+        # Créer un tileset
+        tileset = ET.SubElement(map_elem, "tileset", firstgid="1", source="Nv 1.tsx")
+
+        # Sauvegarder l'arbre XML dans un fichier
+        tree = ET.ElementTree(map_elem)
+        tree.write(f"code/Maps2/{nom}.tmx", xml_declaration=True, encoding='UTF-8')
+
+        # Créer un élément <layer>
+        layer_mur = ET.SubElement(map_elem, "layer", id="2", name="Murs", width='60', height="60")
+        layer_sol = ET.SubElement(map_elem, "layer", id="1", name="Sol", width='60', height="60")
+        layer_obj1 = ET.SubElement(map_elem, "layer", id="3", name="Objets 1", width='60', height="60")
+
+        # Créer un élément <data> avec un encodage CSV
+        data_mur = ET.SubElement(layer_mur, "data", encoding="csv")
+        data_sol = ET.SubElement(layer_sol, "data", encoding="csv")
+        data_obj1 = ET.SubElement(layer_obj1, "data", encoding="csv")
+
+        # Insérer les données de tuiles (vous devriez remplacer cela par vos propres données)
+        data_mur.text = string_murs
+        data_sol.text = string_sol
+        data_obj1.text = string_obj1
+
+        layer_objects = ET.SubElement(map_elem,'objectgroup', id='5', name="objets")
+        id = 6
+        for obj in objects:
+            if type(obj.get('width')) == str:
+                new_obj = ET.SubElement(layer_objects, "object", name=obj.get('name'), type=obj.get('type'), x=obj.get('x'), y=obj.get('y'), width=obj.get('width'), height=obj.get('height'))
+            else:
+                new_obj = ET.SubElement(layer_objects, "object", name=obj.get('name'), type=obj.get('type'), x=obj.get('x'), y=obj.get('y'))
+                # Pour un point, ajouter un élément <point/> à l'objet
+                point = ET.SubElement(new_obj, "point")
+        # Sauvegarder les modifications dans le fichier
+        tree.write(f"code/Maps2/{nom}.tmx", xml_declaration=True, encoding='UTF-8')
+
+        tmx_data = pytmx.util_pygame.load_pygame(f'code/Maps2/{nom}.tmx')
+        map_data = pyscroll.data.TiledMapData(tmx_data)
+        map_layer = pyscroll.orthographic.BufferedRenderer(map_data, (1200, 1200))
+        groupe = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=6)
+        return groupe
+    
     def nouvelle_carte(self,nom, portails=[]):
         # Fonction qui permet de créer une carte et de la stocker dans le dictionnaire "maps"
         tmx_data = pytmx.util_pygame.load_pygame(f"code/Maps2/{nom}.tmx")
