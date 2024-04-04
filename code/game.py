@@ -8,7 +8,6 @@ from player import *
 
 
 BG = pygame.transform.scale(pygame.image.load("graphiques/menu/Background.png"), (1520, 1024))
-
 def get_font(size): # Returns Press-Start-2P in the desired size
     return pygame.font.Font("graphiques/menu/font.ttf", size)
 
@@ -23,7 +22,9 @@ class Game:
 
         #liste des mobs
         self.mobs = []
-        
+        self.coin = 3
+        self.cooldown = 0
+
         self.img_mouse = pygame.image.load("graphiques/menu/mouse.png")
         self.cursor = pygame.image.load("graphiques/autres/cursor.png")
         self.cursor = pygame.transform.scale(self.cursor, (18,18))
@@ -31,20 +32,42 @@ class Game:
     
     
     def show_inventory(self):
-        pygame.draw.rect(self.screen, "gray", pygame.Rect(660,850, 80*3, 80))
+        pygame.draw.rect(self.screen, "gray", pygame.Rect(620,910, 80*3, 80))
         for i in range(3):
-            pygame.draw.rect(self.screen, "#545454", pygame.Rect(660+(80*i),850, 80, 80), 3)
+            pygame.draw.rect(self.screen, "#545454", pygame.Rect(620+(80*i),910, 80, 80), 3)
             texte = get_font(10).render(str(i+1), True, "#545454")
             rect = texte.get_rect()
-            rect[0], rect[1] = 670+(80*i), 860
+            rect[0], rect[1] = 630+(80*i), 920
             self.screen.blit(texte, rect)
         j = 0
         for i in self.joueur.inventory:   
             if i != '':
-                self.screen.blit(i.gim, pygame.Rect(690+(80*j),880, i.rect[2], i.rect[3]))
+                self.screen.blit(i.gim, pygame.Rect(650+(80*j),940, i.rect[2], i.rect[3]))
             j+=1
-        pygame.draw.rect(self.screen, "#ffffff", pygame.Rect(657+(80*self.joueur.current_slot),847, 86, 86), 3)
+        pygame.draw.rect(self.screen, "#ffffff", pygame.Rect(617+(80*self.joueur.current_slot),907, 86, 86), 3)
     
+    def info_bar(self):
+        pygame.draw.rect(self.screen, "#253343", pygame.Rect(0,904, 1520, 120))
+        self.joueur.show_life(self.screen)
+        self.show_inventory()
+        img_coin = pygame.image.load(f"graphiques/Items/coin{self.coin}.png")
+        img_coin = pygame.transform.scale(img_coin, (30, 30))
+        rect_coin = img_coin.get_rect(center=(400, 950))
+        coin_txt = get_font(18).render('x ' + str(self.joueur.coins), True, "White")
+        coin_rect = coin_txt.get_rect(center=(450, 950))
+        lvl_txt = get_font(25).render(self.map_manager.current_map, True, "White")
+        lvl_rect = lvl_txt.get_rect(center=(1200, 950))
+        self.screen.blit(lvl_txt, lvl_rect)
+        self.screen.blit(img_coin, rect_coin)
+        self.screen.blit(coin_txt, coin_rect)
+        if self.cooldown == 11:
+            self.coin -= 1
+            self.cooldown = 0
+        if self.coin == -1:
+            self.coin = 3
+        self.cooldown+=1
+
+
     def update_joueur(self):
         if self.joueur.health <= 0:
             self.game_over()
@@ -53,9 +76,7 @@ class Game:
         self.joueur.weapon = Weapon(self.joueur_vect, self.weapon, self.screen, self.map_manager.groupe()._spritelist, self.joueur)
         self.joueur.weapon.update()
         self.joueur.use_item()
-        self.joueur.show_life(self.screen)
         self.joueur.update_inventory()
-        self.show_inventory()
         pos = pygame.mouse.get_pos()
         self.screen.blit(self.cursor, pos)  
 
@@ -64,6 +85,8 @@ class Game:
         mobs = self.map_manager.mobs()
         for i in mobs:
             if i.health <= 0:
+                i.drop()
+                mobs.remove(i)
                 del(i)
                 continue
             i.change_animation('idle', False)
@@ -81,6 +104,22 @@ class Game:
                     slot_to_fill = self.joueur.non_filled_slots[0]
                     self.joueur.inventory[slot_to_fill] = i
                     self.map_manager.items().remove(i)
+        for i in self.joueur.coin_list:
+            pos = self.map_manager.map_layer().translate_point(i.position)
+            self.screen.blit(i.image, (pos[0], pos[1], 20,22))
+            if i.position[0]<i.to_pos[0]:
+                i.position[0]+= 0.5
+            elif i.position[0]>i.to_pos[0]:
+                i.position[0]-= 0.5
+            if i.position[1]>i.to_pos[1]:
+                i.position[1]-= 0.5
+            elif i.position[1]<i.to_pos[1]:
+                i.position[1]+= 0.5
+            i.rect[0], i.rect[1] = i.position[0], i.position[1]
+            if i.rect.colliderect(self.joueur.rect):
+                self.joueur.coin_list.remove(i)
+                del(i)
+                self.joueur.coins += 1
     def update(self):
         #cette fonction vérifie les parametres du jeu pour gerer les collisions, les interactions, etc...
         self.joueur.presse()
@@ -414,6 +453,7 @@ class Game:
             self.update_mobs()
             self.update_items()
             self.update_joueur()
+            self.info_bar()
             self.joueur.weapon.update()
             pygame.display.flip()
 

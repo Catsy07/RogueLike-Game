@@ -30,6 +30,7 @@ class MapManager:
         self.screen = screen
         self.joueur = joueur
         self.current_map = 'Spawn' # Map actuelle 
+        self.current_level = 'Level 1'
         self.maps1 = ['salle1.tmx', 'salle1.tmx', 'salle1.tmx', 'salle1.tmx', 'salle2.tmx', 'salle1.tmx', 'salle1.tmx', 'salle1.tmx', 'salle1.tmx']
         self.niveau1 = self.assemblage_map(self.maps1, 'lvl1')
         
@@ -185,7 +186,7 @@ class MapManager:
         tmx_data = pytmx.util_pygame.load_pygame(f"code/Maps2/{nom}.tmx")
         map_data = pyscroll.data.TiledMapData(tmx_data) # on récupere les données de la carte
         map_layer = pyscroll.orthographic.BufferedRenderer(map_data, self.screen.get_size())
-        map_layer.zoom = 3 # Zoom sur le joueur
+        map_layer.zoom = 3.5 # Zoom sur le joueur
 
         # Liste qui contient tous les murs et donc les collisions
         walls = []
@@ -206,7 +207,7 @@ class MapManager:
         for obj in tmx_data.objects:
                 if obj.type == 'item':
                     name, level, type = obj.name.split()
-                    items.append(Item(name, type, int(level), self.joueur, obj.x, obj.y))
+                    items.append(Item(name, type, int(level), self.joueur, obj.x, obj.y, 20, 22, (obj.x, obj.y)))
 
         # On crée un groupe qui contient tous les calques de la map pour povoir tous les injecter en meme temps
         groupe = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4) 

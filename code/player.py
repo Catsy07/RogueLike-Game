@@ -2,6 +2,7 @@ import pygame
 import pyscroll
 import math
 from pyscroll.orthographic import BufferedRenderer
+from random import randint
 
 from animation import SpriteAnimé
 
@@ -64,6 +65,8 @@ class Joueur(Entité):
         self.xbool = False
 
         self.inventory = ['','','']
+        self.coin_list = []
+        self.coins = 0
         self.filled_slots = 0
         self.current_slot = 0
     def presse(self):
@@ -115,13 +118,13 @@ class Joueur(Entité):
             elif (self.max_health - self.health) % 2 != 0:
                 vide = ((self.max_health - self.health-1)/2)
         for i in range(int(plein)):
-            surface.blit(img_plein,(x,50,30,28))
+            surface.blit(img_plein,(x,935,30,28))
             x += 50
         if moitié == 1:
-            surface.blit(img_moitie,(x,50,30,28))
+            surface.blit(img_moitie,(x,935,30,28))
             x += 50
         for i in range(int(vide)):
-            surface.blit(img_vide,(x,50,30,28))
+            surface.blit(img_vide,(x,935,30,28))
             x += 50
 
         
@@ -192,7 +195,10 @@ class Monstre(Entité):
                 self.joueur.health -= self.damage
                 self.last_attack_time = current_time
 
-            
+    def drop(self):
+        x = randint(3,10)
+        for i in range(x):
+            self.joueur.coin_list.append(Item('coin0', 'coin', 1, self.joueur, self.position[0], self.position[1], 12, 12, (randint(round(self.position[0]-35), round(self.position[0]+35)), randint(round(self.position[1]-35), round(self.position[1]+35)))))        
 
 class Weapon:
     def __init__(self, pivot, name, surface, monstres, joueur):
@@ -287,17 +293,18 @@ class Weapon:
         
 
 class Item:
-    def __init__(self, name, type, level, joueur, x, y):
+    def __init__(self, name, type, level, joueur, x, y, width, height, to_pos):
         self.name = name
         self.quantity = 0
         self.type = type
         self.level = level
         self.joueur = joueur
-        self.position = (x,y)
-        self.image = pygame.transform.scale((pygame.image.load(f'graphiques/Items/{name}.png')), (20,22))
+        self.position = [x,y]
+        self.image = pygame.transform.scale((pygame.image.load(f'graphiques/Items/{name}.png')), (width, height))
         self.gim = self.get_image(0,0)
         self.rect = self.gim.get_rect()
         self.rect[0], self.rect[1] = self.position[0], self.position[1]
+        self.to_pos = to_pos
         
         
 
@@ -307,3 +314,4 @@ class Item:
         img.blit(self.image,(0,0),(x,y,self.image.get_width(),self.image.get_height()))
         img.set_colorkey([0,0,0])
         return img
+    
