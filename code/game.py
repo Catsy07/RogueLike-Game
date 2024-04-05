@@ -45,6 +45,11 @@ class Game:
                 self.screen.blit(i.gim, pygame.Rect(650+(80*j),940, i.rect[2], i.rect[3]))
             j+=1
         pygame.draw.rect(self.screen, "#ffffff", pygame.Rect(617+(80*self.joueur.current_slot),907, 86, 86), 3)
+        current_item = self.joueur.inventory[self.joueur.current_slot]
+        if current_item != '':
+            texte = get_font(7).render(f'{current_item.name} {current_item.type} lvl {current_item.level}', True, "#ffffff")
+            rect = texte.get_rect(center = (1520/2-30, 1003))
+            self.screen.blit(texte, rect)
     
     def info_bar(self):
         pygame.draw.rect(self.screen, "#253343", pygame.Rect(0,904, 1520, 120))
@@ -105,6 +110,9 @@ class Game:
                     self.joueur.inventory[slot_to_fill] = i
                     self.map_manager.items().remove(i)
         for i in self.joueur.coin_list:
+            
+            i.image = pygame.image.load(f"graphiques/Items/coin{self.coin}.png")
+            i.image = pygame.transform.scale(i.image, (12, 12))
             pos = self.map_manager.map_layer().translate_point(i.position)
             self.screen.blit(i.image, (pos[0], pos[1], 20,22))
             if i.position[0]<i.to_pos[0]:
@@ -115,7 +123,7 @@ class Game:
                 i.position[1]-= 0.5
             elif i.position[1]<i.to_pos[1]:
                 i.position[1]+= 0.5
-            i.rect[0], i.rect[1] = i.position[0], i.position[1]
+            i.rect[0], i.rect[1] = i.to_pos[0], i.to_pos[1]
             if i.rect.colliderect(self.joueur.rect):
                 self.joueur.coin_list.remove(i)
                 del(i)
