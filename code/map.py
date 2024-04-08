@@ -47,14 +47,18 @@ class MapManager:
         self.current_map = 'Spawn' # Map actuelle 
         self.current_level = 'lvl1'
         self.maps1 = [self.SIDE, self.SIDE, self.SIDE, self.SIDE, self.SIDE, self.SIDE, random.choice(self.NE), random.choice(self.EO), random.choice(self.NO), self.SIDE, self.SIDE, random.choice(self.NS), 'sortie_lvl2.tmx', 'spawn_lvl2.tmx', self.SIDE, self.SIDE, random.choice(self.SE), random.choice(self.SEO), random.choice(self.O), self.SIDE, self.SIDE, self.SIDE, self.SIDE, self.SIDE, self.SIDE]
-        #self.maps1 = [random.choice(self.O),random.choice(self.O),random.choice(self.O),random.choice(self.O), 'sortie_lvl2.tmx',random.choice(self.O),random.choice(self.O),random.choice(self.O),random.choice(self.O)]
-        self.niveau1 = self.assemblage_map(self.maps1, 'niveau1')
+        self.maps2 = [self.SIDE, self.SIDE, self.SIDE, self.SIDE, self.SIDE, self.SIDE, 'spawn_lvl3.tmx', random.choice(self.EO), random.choice(self.NO), self.SIDE, self.SIDE, random.choice(self.NE), random.choice(self.EO), random.choice(self.SO), self.SIDE, self.SIDE, random.choice(self.SE), random.choice(self.EO), 'sortie_lvl3.tmx', self.SIDE, self.SIDE, self.SIDE, self.SIDE, self.SIDE, self.SIDE]
+        self.lvl1 = self.assemblage_map(self.maps1, 'lvl1')
+        self.lvl2 = self.assemblage_map(self.maps2, 'lvl2')
         # On crée les cartes 
         self.nouvelle_carte("Spawn", portails=[
-            Portail('Spawn', "sortie_spawn", 'niveau1', 'spawn_lvl2')
+            Portail('Spawn', "sortie_spawn", 'lvl1', 'spawn_lvl2')
         ]) 
-        self.nouvelle_carte("niveau1", portails=[
-            Portail('niveau1', "sortie_lvl2", 'Spawn', 'spawn_spawn')
+        self.nouvelle_carte("lvl1", portails=[
+            Portail('lvl1', "sortie_lvl2", 'lvl2', 'spawn_lvl3')
+        ])
+        self.nouvelle_carte("lvl2", portails=[
+            Portail('lvl2', "sortie_lvl3", 'Spawn', 'spawn_spawn')
         ])
 
         self.teleport("spawn_spawn")

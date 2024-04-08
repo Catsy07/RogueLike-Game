@@ -134,14 +134,14 @@
 </data>
  </layer>
  <objectgroup id="4" name="objets">
-  <object id="2" name="collision" type="Collision" x="112" y="80" width="432" height="16"/>
-  <object id="3" name="collision" type="Collision" x="544" y="80" width="16" height="464"/>
-  <object id="4" name="collision" type="Collision" x="352" y="544" width="208" height="16"/>
-  <object id="6" name="collision" type="Collision" x="96" y="544" width="192" height="16"/>
-  <object id="7" name="collision" type="Collision" x="272" y="560" width="16" height="64"/>
-  <object id="8" name="collision" type="Collision" x="352" y="560" width="16" height="80"/>
+  <object id="2" name="collision" type="Collisions" x="112" y="80" width="432" height="16"/>
+  <object id="3" name="collision" type="Collisions" x="544" y="80" width="16" height="464"/>
+  <object id="4" name="collision" type="Collisions" x="352" y="544" width="208" height="16"/>
+  <object id="6" name="collision" type="Collisions" x="96" y="544" width="192" height="16"/>
+  <object id="7" name="collision" type="Collisions" x="272" y="560" width="16" height="64"/>
+  <object id="8" name="collision" type="Collisions" x="352" y="560" width="16" height="80"/>
   <object id="9" name="collision" type="Collisions" x="272" y="624" width="16" height="16"/>
-  <object id="10" name="collision" type="Collision" x="96" y="80" width="16" height="464"/>
+  <object id="10" name="collision" type="Collisions" x="96" y="80" width="16" height="464"/>
   <object id="11" name="spawn_lvl2" type="spawn" x="318" y="206">
    <point/>
   </object>
