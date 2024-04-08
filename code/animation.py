@@ -16,7 +16,7 @@ class SpriteAnimé(pygame.sprite.Sprite):
         self.image = pygame.transform.flip(self.images[name][self.index], xbool, False)
         self.image.set_colorkey(0,0)
         self.clock += 9
-        if self.clock >= 100:
+        if self.clock >= 80:
             self.index += 1
             if name == 'run':
                 if self.index >=4:

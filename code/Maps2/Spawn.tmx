@@ -244,10 +244,10 @@
   <object id="26" name="demon" type="spawn_mob" x="261" y="278">
    <point/>
   </object>
-  <object id="27" name="potion 2 heal" type="item" x="258" y="357">
+  <object id="27" name="potion_heal 2 heal" type="item" x="258" y="357">
    <point/>
   </object>
-  <object id="32" name="potion 2 heal" type="item" x="348" y="298.5">
+  <object id="32" name="potion_heal 2 heal" type="item" x="348" y="298.5">
    <point/>
   </object>
  </objectgroup>

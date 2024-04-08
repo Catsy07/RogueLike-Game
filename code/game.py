@@ -29,7 +29,7 @@ class Game:
         self.cursor = pygame.image.load("graphiques/autres/cursor.png")
         self.cursor = pygame.transform.scale(self.cursor, (18,18))
         pygame.mouse.set_visible(False)
-    
+
     
     def show_inventory(self):
         pygame.draw.rect(self.screen, "gray", pygame.Rect(620,910, 80*3, 80))
@@ -40,7 +40,7 @@ class Game:
             rect[0], rect[1] = 630+(80*i), 920
             self.screen.blit(texte, rect)
         j = 0
-        for i in self.joueur.inventory:   
+        for i in self.joueur.inventory:
             if i != '':
                 self.screen.blit(i.gim, pygame.Rect(650+(80*j),940, i.rect[2], i.rect[3]))
             j+=1
@@ -74,16 +74,15 @@ class Game:
 
 
     def update_joueur(self):
+        mobs = self.map_manager.mobs()
         if self.joueur.health <= 0:
             self.game_over()
         self.joueur_pos = self.map_manager.map_layer().translate_point(self.joueur.position)
         self.joueur_vect = pygame.Vector2(self.joueur_pos[0],self.joueur_pos[1])
         self.joueur.weapon = Weapon(self.joueur_vect, self.weapon, self.screen, self.map_manager.groupe()._spritelist, self.joueur)
         self.joueur.weapon.update()
-        self.joueur.use_item()
+        self.joueur.use_item(self.map_manager.groupe()._spritelist)
         self.joueur.update_inventory()
-        pos = pygame.mouse.get_pos()
-        self.screen.blit(self.cursor, pos)  
 
 
     def update_mobs(self):
@@ -105,10 +104,7 @@ class Game:
             pos = self.map_manager.map_layer().translate_point(i.position)
             self.screen.blit(i.image, (pos[0], pos[1], 20,22))
             if i.rect.colliderect(self.joueur.rect):
-                if self.joueur.non_filled_slots != []:
-                    slot_to_fill = self.joueur.non_filled_slots[0]
-                    self.joueur.inventory[slot_to_fill] = i
-                    self.map_manager.items().remove(i)
+                self.joueur.fill_inventory(self.map_manager, i)
         for i in self.joueur.coin_list:
             
             i.image = pygame.image.load(f"graphiques/Items/coin{self.coin}.png")
@@ -128,6 +124,12 @@ class Game:
                 self.joueur.coin_list.remove(i)
                 del(i)
                 self.joueur.coins += 1
+        for i in self.map_manager.items():
+            pos = self.map_manager.map_layer().translate_point(i.position)
+            self.screen.blit(i.image, (pos[0], pos[1], 20,22))
+
+        for i in self.map_manager.tresors():
+            i.basic(self.screen, self.map_manager)
     def update(self):
         #cette fonction vérifie les parametres du jeu pour gerer les collisions, les interactions, etc...
         self.joueur.presse()
@@ -208,6 +210,7 @@ class Game:
                 button.changeColor(CHOIX_MOUSE_POS)
                 button.update(self.screen)
             pos = pygame.mouse.get_pos()
+            presse = pygame.key.get_pressed()
             self.screen.blit(self.cursor, pos)      
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -215,6 +218,8 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if CHEVALIER_BUTTON.checkForInput(CHOIX_MOUSE_POS):
                         self.info_perso('chevalier', 1, 6, 1, 'chevalier_sword')
+                    if MAGICIEN_BUTTON.checkForInput(CHOIX_MOUSE_POS) and presse[pygame.K_c]:
+                        self.info_perso('magicien', 5, 30, 10, 'mage_stick')
                     if MAGICIEN_BUTTON.checkForInput(CHOIX_MOUSE_POS):
                         self.info_perso('magicien', 1.5, 4, 1.5, 'mage_stick')
                     if TANK_BUTTON.checkForInput(CHOIX_MOUSE_POS):
@@ -284,6 +289,9 @@ class Game:
                     
 
                         self.weapon = weapon
+
+                        
+                        self.shop = Shop(self.screen, [], self.joueur)
                         
                         self.go()
                         
@@ -463,6 +471,9 @@ class Game:
             self.update_joueur()
             self.info_bar()
             self.joueur.weapon.update()
+            self.shop.update()
+            pos = pygame.mouse.get_pos()
+            self.screen.blit(self.cursor, pos)
             pygame.display.flip()
 
             #vérification de l'appui sur la croix
